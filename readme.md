@@ -21,32 +21,25 @@ DIRECTORY STRUCTURE
 
 ```
 common
-    config/              contains shared configurations
-    mail/                contains view files for e-mails
-    models/              contains model classes used in both backend and frontend
+    config/              公共配置文件
+    mail/                e-mails配置文件
+    models/              公共模型文件
 console
     config/              contains console configurations
     controllers/         contains console controllers (commands)
     migrations/          contains database migrations
     models/              contains console-specific model classes
     runtime/             contains files generated during runtime
-backend
-    assets/              contains application assets such as JavaScript and CSS
-    config/              contains backend configurations
-    controllers/         contains Web controller classes
-    models/              contains backend-specific model classes
-    runtime/             contains files generated during runtime
-    views/               contains view files for the Web application
-    web/                 contains the entry script and Web resources
 frontend
     assets/              contains application assets such as JavaScript and CSS
-    config/              contains frontend configurations
-    controllers/         contains Web controller classes
-    models/              contains frontend-specific model classes
+    conponents           扩展文件夹
+    config/              配置文件夹
+    controllers/         控制器文件夹
+    models/              模型文件夹
     runtime/             contains files generated during runtime
-    views/               contains view files for the Web application
+    views/               页面文件夹
     web/                 contains the entry script and Web resources
-    widgets/             contains frontend widgets
+    widgets/             小部件扩展
 vendor/                  contains dependent 3rd-party packages
 environments/            contains environment-based overrides
 tests                    contains various tests for the advanced application
