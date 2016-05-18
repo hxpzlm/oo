@@ -1,0 +1,70 @@
+.returns-af{
+	display: inline-block;
+	position: relative;
+}
+.returns-af i{
+	cursor: pointer;
+}
+.returns-box{
+	position: absolute;
+	width: 400px;
+	top: 20px;
+	right: 45%;	
+	background: #F2F2F2;
+	border: 1px solid #ccc;
+	display: none;
+	z-index: 1;
+}
+.returns-boxt1{
+	height: 30px;
+	line-height: 30px;
+	text-align: right;
+	background: #fff;
+}
+.returns-boxt1 i{
+	margin-right: 10px;
+	font-size: 16px;
+}
+.returns-boxt2{
+	padding: 8px 0;
+	border-bottom: 1px solid #fff;
+}
+.returns-boxt3{
+	padding: 5px 0;
+	border-bottom: 1px solid #fff;
+	text-align: center;	
+}
+.returns-boxt3 p{
+	width: 200px;
+	float: left;
+	height: 20px;
+	line-height: 20px;
+	display: inline-block;
+	overflow: hidden;
+	margin-left: 25px;
+	text-overflow:ellipsis;
+	white-space:nowrap;
+}
+.returns-boxt3 input{
+	width: 150px !important;
+	height: 20px;
+	outline: none;
+	background: #fff !important;
+	text-align: left !important;
+}
+.returns-but{
+	text-align: right;
+	margin: 10px 0;
+}
+.returns-but span{
+	display: inline-block;
+	padding: 5px 20px;
+	border-radius: 5px;
+	background: #666666;
+	color: #FFFFFF;
+	margin-right: 10px;
+	cursor: pointer;
+}
+.returns-but1{
+	background: #C61239 !important;
+}

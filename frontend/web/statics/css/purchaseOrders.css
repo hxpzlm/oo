@@ -1,0 +1,277 @@
+.seeks{
+	margin: 50px 0 10px 0;
+	position: relative;
+}
+.seeks input{
+	height: 28px;
+	width: 500px;
+	float: left;
+	border:1px solid #ccc;
+	padding: 0 5px;
+	margin-left: 0.5%;
+}
+.seeks_float{
+	width: 508px;
+	background-color: #ffffff;
+	border: 1px solid #cccccc;
+	position: absolute;
+	top: 30px;
+	left: 10px;
+	display: none;
+	z-index: 50;
+}
+
+.seeks_float li:hover{
+	background-color: #f2f2f2;
+}
+
+.seeks_float_last{
+	background-color: #f2f2f2;
+	height: 24px!important;
+	line-height: 24px!important;
+}
+
+.seeks_float_last .iconfont{
+	font-size: 14px;
+	color: #666666;
+}
+
+.seeks_float li{
+	padding-left: 10px;
+	height: 20px;
+	line-height: 20px;
+	cursor: pointer;
+}
+.seeks button{
+	height: 28px;
+	line-height: 28px;
+	background: none;
+	border: 1px solid #ccc;
+	float: left;
+	margin: 2px 0 0 10px;
+	padding: 0 15px;
+	border-radius: 5px;
+	font-size: 12px;
+	color: #666;
+	cursor: pointer;
+}
+.seeks button i{
+	display: inline-block;
+	margin-right: 5px;
+	float: left;
+}
+.seeks p {
+	float: left;
+	height: 18px;
+	margin-left: 20px;
+	cursor: pointer;
+	font-size: 12px;
+	color: #C6C6C6;
+	padding-top: 12px;
+}
+.seeks p i{
+	display: inline-block;
+}
+.seeks a{
+	color: #333333;
+}
+.seeks span{
+	float: right;
+	background: #D9D9D9;
+	display: block;
+	height: 30px;
+	line-height: 30px;
+	padding:0 10px;
+	margin-left: 10px;
+	font-size: 12px;
+	cursor: pointer;
+}
+.seeks span:hover{
+	background: #ccc;
+}
+.seeks-x2{
+	margin-right: 2%;
+}
+.seeks span i{
+	display: inline-block;
+	margin-right: 5px;
+	font-size: 16px;
+	font-weight: bold;
+}
+.seeks-box{
+	margin: 10px 0;
+	display: none;
+}
+.seeks-boxs{
+	float: left;
+	margin: 5px 0 5px 0.2%;
+	position: relative;
+}
+
+.seeks01_float{
+	position: absolute;
+	width: 188px;
+	background-color: #ffffff;
+	border: 1px solid #cccccc;
+	position: absolute;
+	top: 30px;
+	left: 90px;
+	z-index: 50;
+	display: none;
+}
+
+.seeks01_float li{
+	padding-left: 10px;
+	height: 20px;
+	line-height: 20px;
+	cursor: pointer;
+}
+
+.seeks01_float li:hover{
+	background-color: #f2f2f2;
+}
+
+.seeks01_float_last{
+	background-color: #f2f2f2;
+	height: 24px!important;
+	line-height: 24px!important;
+}
+
+.seeks01_float_last .iconfont{
+	font-size: 14px;
+	color: #666666;
+}
+
+.seeks-boxs p{
+	width: 80px;
+	text-align: right;
+	float: left;
+	line-height: 28px;
+	padding-right: 10px;
+}
+.seeks-boxs input{
+	width: 190px;
+	padding:  0 5px;
+	height: 28px;
+	border:1px solid #ccc;
+}
+.seeks-boxs select{
+	width: 201px;
+	padding:  0 5px;
+	height: 28px;
+	border:1px solid #ccc;
+	outline: none;
+	appearance:none;
+	-moz-appearance:none;
+	-webkit-appearance:none;
+	background: url(../img/sxl.png)no-repeat scroll right center transparent;
+}
+.seeks-boxs select::-ms-expand { display: none; }
+.seeks-boxst2 input{
+	width: 100px;
+	height: 28px;
+	border:1px solid #ccc;
+	padding: 0 5px;
+}
+.seeks-boxst1{
+	clear: both;
+}
+table.orders-info {
+	width: 100%;
+	border-collapse: collapse;
+}
+table.orders-info th {
+	padding: 8px 0;
+	border-top: 1px solid #ccc;
+	border-bottom: 1px solid #ccc;
+	background-color: #F2F2F2;
+}
+table.orders-info td {
+	padding: 8px 0;
+	background-color: #ffffff;
+	border-top: 1px solid #666;
+	border-bottom: 1px solid #ccc;
+	text-align: center;
+	font-size: 12px;
+}
+table.orders-info td input{
+	width: 40px;
+	text-align: center;
+	border: none;
+	background: #ccc;
+	padding: 2px 0;
+}
+table.orders-info tr:nth-child(2n+1) td{
+	background: #F2F2F2;
+}
+table.orders-info tr:hover td{
+	background: #EAF6FD;
+}
+.table-tdw{
+	width:280px;
+	max-width: 280px;
+	overflow: hidden;
+	text-overflow:ellipsis;
+	white-space:nowrap;
+}
+.orders-info td a i{
+	display: inline-block;
+	margin: 0 3px;
+	color: #333;
+}
+.orders-page{
+	padding: 10px;
+	/*width: 100;*/
+	background: #F2F2F2;
+	text-align: right;
+	padding-right: 2%;
+}
+.orders-page span{
+	display: inline-block;
+	margin: 0 3px;
+}
+.orders-page i{
+	display: inline-block;
+	margin: 0 3px;
+	cursor: pointer;
+}
+.orders-page a,.orders-page a:hover{
+	color: #333;
+}
+/*删除弹窗*/
+.orders-sc{
+	width: 380px;
+	border: 1px solid #ccc;
+	background: #F2F2F2;
+	display: none;
+}
+.orders-sct1{
+	padding: 10px;
+	background: #fff;
+}
+.orders-sct1 i{
+	float: right;
+	cursor:context-menu;
+	font-stretch: 16px;
+}
+.orders-sct2{
+	text-align: center;
+	padding: 20px 0;
+}
+.orders-sct3{
+	text-align: center;
+	padding: 20px 0;
+}
+.orders-sct3 span{
+	padding: 5px 15px;
+	background: #666666;
+	border-radius: 5px;
+	color: #fff;
+	display: inline-block;
+	cursor:context-menu;
+}
+.orders-sct3qx{
+	background: #C61239 !important;
+	margin-left: 20px;
+}
+

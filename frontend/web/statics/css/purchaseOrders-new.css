@@ -1,0 +1,338 @@
+.orders-new{
+	margin-bottom: 1px;
+}
+.orders-new p{
+	width: 10%;
+	background: #F2F2F2;
+	height: 34px;
+	line-height: 34px;
+	float: left;
+	text-align: right;
+	margin-right: 5px;
+	padding-right: 5px;
+}
+.orders-new input{
+	width: 60%;
+	height: 28px;
+	border: 1px solid #ccc;
+	margin: 2px 0;
+	padding: 0 5px;
+	float: left;
+}
+
+.orders-new select{
+	width: 60.6%;
+	height: 30px;
+	border: 1px solid #ccc;
+	margin: 2px 0;
+	padding: 0 28px 0 5px; 
+	outline: none;
+	appearance:none;
+  	-moz-appearance:none;
+  	-webkit-appearance:none;
+  	background: url(../img/sxl.png)no-repeat scroll right center transparent;
+}
+
+.orders-new select::-ms-expand { display: none; }
+.orders-new label,.orders-new span{
+	height: 34px;
+	line-height: 34px;
+	margin:  0 10px;
+}
+.orders-new span{
+	color: #ccc;
+}
+.orders-newtade{
+	text-align: center;
+	margin: 0;
+	background: #F2F2F2;
+	margin-bottom: 1px;
+	padding: 10px 0;
+}
+.orders-newt1{
+	height: 72px !important;
+	line-height: 72px !important;
+}
+.orders-newt2{
+	height: 70px;
+	padding: 0 5px;
+	margin: 0;
+	resize: none;
+	width: 60%;
+	border: 1px solid #CCCCCC;
+}
+/*收货信息*/
+.goodsReceipt_left{
+	float: left;
+}
+
+.goodsReceipt{
+	float: left;
+	margin: 0;
+	resize: none;
+	width: 60%;
+}
+
+.goodsReceipt div{
+	width: 100%;
+}
+
+.goodsReceipt input{
+	margin-right: 0.5%;
+}
+
+.goodsReceipt01{
+	width: 10%!important;
+}
+
+.goodsReceipt02{
+	width: 14%!important;
+}
+
+.goodsReceipt03{
+	width: 38%!important;
+}
+
+.goodsReceipt04{
+	width: 16%!important;
+}
+
+.goodsReceipt05{
+	width: 2%!important;
+	height: 16px!important;
+	margin-top: 10px!important;
+	border: none!important;
+}
+
+.goodsReceipt06,.goodsReceipt07{
+    width: 16%!important;
+}
+
+.goodsReceipt span{
+	display: inline;
+}
+
+.goodsReceipt .goodsReceipt_label{
+	display: inline-block;
+	*display:inline;
+	*zoom:1;
+	width: 16px;
+	height: 16px;
+	padding: 0;
+	line-height: 16px;
+	text-align: center;
+	background-color: #333333;
+	border-radius: 8px;
+	color: #ffffff;
+	font-size: 14px;
+	font-weight: bold;
+}
+
+/*权限信息s*/
+.jurisdiction_left{
+	float: left;
+	height: 30px!important;
+	line-height: 30px!important;
+}
+
+.jurisdiction{
+	float: left;
+	margin: 0;
+	resize: none;
+	width: 60%;
+}
+
+.jurisdiction_top{
+	width: 100%;
+	height: 30px;
+	line-height: 30px;
+}
+
+.jurisdiction_top input{
+	width: 16px;
+	height: 16px;
+	margin-top: 10px;
+}
+.jurisdiction_top label{
+	float: left;
+	margin-right: 2%;
+}
+
+.jurisdiction .table01{
+	float: left;
+	background-color: #F2F2F2;
+	border-collapse: collapse;
+	text-align: left;
+	width: 10%;
+}
+
+.jurisdiction .table01 td{
+	border:  1px solid #cccccc;
+	text-align: center;
+	font-size: 14px;
+	height: 24px;
+	line-height: 24px;
+
+}
+
+.jurisdiction .table02{
+	float: left;
+	background-color: #F2F2F2;
+	border-collapse: collapse;
+	text-align: left;
+	width: 80%;
+}
+
+.jurisdiction .table02 td{
+	border:  1px solid #cccccc;
+	text-align: center;
+	width: 14%;
+	font-size: 14px;
+	height: 24px;
+	line-height: 24px;
+}
+
+.jurisdiction .table02 td input{
+	width: 12px;
+	height: 12px;
+	margin-left: 40%;
+}
+
+/*权限信息e*/
+.orders-newbut{
+	text-align: right;
+	margin-right: 14%;
+	padding: 10px 0;
+}
+.orders-newbut button{
+	background: #C61239;
+	color: #fff;
+	border: none;
+	display: inline-block;
+	padding: 5px 30px;
+	border-radius: 5px;
+	font-size: 16px;
+	cursor: pointer;
+}
+.orders-newbut2{
+	background: #666666 !important;
+	margin-left: 20px;
+}
+
+/*商品相关信息*/
+.goodsReceipt_commodity{
+    position: relative;
+    width: 100% !important;
+    height: 30px;
+}
+.goodsReceipt_commodity input,
+.goodsReceipt_commodity span,
+.goodsReceipt_commodity label{
+    float: left;
+}
+
+.goodsReceipt_commodity span{
+    margin: 0 10px 0 0!important;
+}
+
+.goodsReceipt_commodity .goodsReceipt_commodity_span{
+    width:8%;
+    margin: 0 2%!important;
+}
+.goodsReceipt_commodity label{
+    margin-top: 10px;
+}
+
+.goodsReceipt_commodity01{
+    width: 30%!important;
+}
+
+.goodsReceipt_commodity02{
+    width: 16%!important;
+}
+
+.goodsReceipt_commodity03{
+    width: 6%!important;
+}
+
+.goodsReceipt_commodity_float{
+    width: 30.5%;
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+    position: absolute;
+    top: 31px;
+    z-index: 50;
+}
+
+.goodsReceipt_commodity01_float{
+    width: 17%;
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+    position: absolute;
+    top: 31px;
+    left: 47%;
+    z-index: 50;
+    display: none;
+}
+
+.goodsReceipt_commodity_span_unit{
+    width: 2.5%!important;
+}
+
+.goodsReceipt_commodity_float li:hover,
+.goodsReceipt_commodity01_float li:hover{
+    background-color: #f2f2f2;
+}
+
+.goodsReceipt_commodity_float_last,
+.goodsReceipt_commodity01_float_last{
+    background-color: #f2f2f2;
+    height: 24px!important;
+    line-height: 24px!important;
+}
+
+.goodsReceipt_commodity_float_last .iconfont
+{
+    font-size: 14px;
+    color: #666666;
+}
+
+.goodsReceipt_commodity01_float_last .iconfont{
+    font-size: 12px;
+    color: #666666;
+}
+
+.goodsReceipt_commodity_float li,
+.goodsReceipt_commodity01_float li{
+    padding-left: 10px;
+    height: 20px;
+    line-height: 20px;
+    cursor: pointer;
+}
+
+.aaa{
+    width: 60%;
+    height: 28px;
+    /*border: 1px solid #ccc;*/
+    /*margin: 2px 0;*/
+    /*padding: 0 5px;*/
+    float: left;
+}
+.aaa input{
+    width: 30px;
+    height: 20px;
+    margin: 8px 0;
+}
+.aaa label{
+    /*width: 50px;*/
+    float: left;
+    margin: 0 5px 0 0;
+}
+.help-block-error{
+	color:#AB2727;
+	font-weight:bold;
+}
+
+.red{
+    color: #cd0200;
+}

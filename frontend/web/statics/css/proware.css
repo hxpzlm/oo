@@ -1,0 +1,46 @@
+.sellDe-del{
+	display: inline-block;
+	position: relative;
+}
+.sellDe-del i{
+	cursor: pointer;
+}
+.sellDe-delbox{
+	position: absolute;
+	top: 20px;
+	right: 45%;
+	width: 350px;
+	height: 126px;
+	border: 1px solid #ccc;
+	background: #F2F2F2;
+	display:none;
+	z-index: 1;
+}
+.delboxt1{
+	height: 30px;
+	line-height: 30px;
+	background: #fff;
+	text-align: right;
+}
+.delboxt1 i{
+	font-size: 18px;
+}
+.delboxt2{
+	text-align: center;
+	margin: 15px 0;
+}
+.pr-delboxt3{
+	text-align: right;
+	margin: 20px;
+}
+.pr-delboxt3 span{
+	padding: 5px 20px;
+	border-radius: 5px;
+	background: #666666;
+	color: #fff;
+	display: inline-block;
+	cursor: pointer;
+}
+.delbox-but{
+	background: #C61239 !important;
+}

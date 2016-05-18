@@ -1,0 +1,84 @@
+.orders-edtade{
+	text-align: center;
+	margin: 0;
+	background: #F2F2F2;
+	margin-bottom: 1px;
+	padding: 10px 0;
+}
+.orders-ed{
+	margin-bottom: 1px;
+}
+.orders-ed p{
+	width: 15%;
+	background: #F2F2F2;
+	height: 34px;
+	line-height: 34px;
+	float: left;
+	text-align: right;
+	margin-right: 5px;
+	padding-right: 5px;
+}
+.orders-ed input{
+	width: 70%;
+	height: 28px;
+	border: 1px solid #ccc;
+	margin: 2px 0;
+	padding: 0 5px;
+	float: left;
+}
+.orders-edt1{
+	height: 72px !important;
+	line-height: 72px !important;
+}
+.orders-edt2{
+	height: 70px;
+	padding: 0 5px;
+	margin: 0;
+	resize: none;
+	width: 70%;
+	border: 1px solid #CCCCCC;
+}
+.orders-edbut{
+	text-align: right;
+	margin-right: 14%;
+	padding: 10px 0;
+}
+.orders-edbut button{
+	background: #C61239;
+	color: #fff;
+	border: none;
+	display: inline-block;
+	padding: 5px 30px;
+	border-radius: 5px;
+	font-size: 16px;
+	cursor: pointer;
+}
+.orders-ed select{
+	width: 70.6%;
+	height: 30px;
+	border: 1px solid #ccc;
+	margin: 2px 0;
+	padding: 0 28px 0 5px; 
+	outline: none;
+	appearance:none;
+  	-moz-appearance:none;
+  	-webkit-appearance:none;
+  	background: url(../img/sxl.png)no-repeat scroll right center transparent;
+}
+.orders-ed select::-ms-expand { display: none; }
+.orders-edbut2{
+	background: #666666 !important;
+	margin-left: 20px;
+}
+.orders-edt1{
+	height: 72px !important;
+	line-height: 72px !important;
+}
+.orders-edt2{
+	height: 70px;
+	padding: 0 5px;
+	margin: 0;
+	resize: none;
+	width: 70%;
+	border: 1px solid #CCCCCC;
+}

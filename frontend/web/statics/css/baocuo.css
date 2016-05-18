@@ -1,0 +1,38 @@
+.baocuo_container{
+    background-color: #ffffff;
+}
+
+.baocuo_main{
+    width: 1190px;
+    height: 400px;
+    margin: 0 auto;
+}
+
+.baocuo_main_top{
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    height: 200px;
+    line-height: 200px;
+    overflow: hidden;
+    margin-top: 60px;
+}
+
+.baocuo_main_bottom{
+    height: 100px;
+    line-height: 100px;
+    font-size: 16px;
+}
+
+.baocuo_main_bottom a{
+    color: #666666!important;
+    margin-left: 350px;
+}
+
+.baocuo_main_bottom .baocuo_btn1{
+    color: #00abf1!important;
+}
+
+.baocuo_main_bottom .baocuo_btn2 span{
+    color: #C61239;
+}

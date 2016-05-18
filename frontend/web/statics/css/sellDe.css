@@ -1,0 +1,114 @@
+.sellDe-del{
+	display: inline-block;
+	position: relative;
+}
+.sellDe-del i{
+	cursor: pointer;
+}
+/*确认入库操作*/
+.sellDe-delbox,.sellDe-delbox2{
+	position: absolute;
+	top: 20px;
+	right: 45%;
+	width: 350px;
+	border: 1px solid #ccc;
+	background: #fff;
+	display:none;
+	z-index: 1;
+}
+.sellDe-delbox{
+	background: #F2F2F2;
+}
+.sd-delboxt1{
+	text-align: center;
+	height: 36px;
+	line-height: 36px;
+	border-bottom: 1px solid #fff;
+}
+.sd-delboxt1_1{
+	height: 30px;
+	line-height: 30px;
+	text-align: right;
+	background: #fff;
+}
+.sd-delboxt1_1 i{
+	margin-right: 10px;
+}
+.sd-delboxt2{
+	text-align: center;
+	height: 36px;
+	line-height: 36px;
+	border-bottom: 1px solid #fff;
+}
+.sd-delboxt2 select{
+	width: 200px;
+	height: 26px;
+	background: #fff;
+	border:none !important;
+	outline: none;
+	appearance:none;
+  	-moz-appearance:none;
+  	-webkit-appearance:none;
+  	background-image: url(../img/sxl.png)no-repeat scroll right center transparent;
+  	background: #fff;
+}
+.sd-delboxt2 select::-ms-expand { display: none; }
+.sd-delboxt2 input{
+	width: 200px !important;
+	height: 20px !important;
+	background:#fff !important;
+	border:1px solid #ccc !important;
+	text-align: left !important;
+	border: none !important;
+	
+}
+.sd-delboxt3{
+	width: 320px;
+	margin:10px auto 0 auto;
+	text-align: right;
+}
+.sd-delboxt3 span{
+	cursor: pointer;
+	display: inline-block;
+	margin-left: 5px;
+	padding: 5px 20px;
+	background: #666666;
+	color: #fff;
+	border-radius: 5px;
+	margin-bottom: 10px;
+}
+.sd-delboxt3-x{
+	background: #C61239 !important;
+}
+/*确认取消出库操作*/
+.sellDe-delbox2{
+	background: #F2F2F2;
+}
+.delbox2t1_1{
+	height: 30px;
+	line-height: 30px;
+	background: #fff;
+}
+.delbox2t1_1 i{
+	margin-right: 10px;
+}
+.delbox2t1{
+	height: 30px;
+	line-height: 30px;
+	margin: 20px;
+}
+.delbox2t2{
+	text-align: right;
+	margin: 20px;
+}
+.delbox2t2 span{
+	padding: 5px 20px;
+	border-radius: 5px;
+	background: #666666;
+	color: #fff;
+	display: inline-block;
+	cursor: pointer;
+}
+.delbox2t2-x{
+	background: #C61239 !important;
+}
