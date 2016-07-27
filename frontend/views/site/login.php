@@ -5,7 +5,7 @@
 /* @var $model \common\models\LoginForm */
 
 use yii\helpers\Html;
-use yii\Widgets\ActiveForm;
+use yii\widgets\ActiveForm;
 use yii\helpers\Url;
 $this->title = '登录-供应链管理系统';
 $this->params['breadcrumbs'][] = $this->title;
@@ -19,12 +19,12 @@ $this->params['breadcrumbs'][] = $this->title;
 		<?php $form = ActiveForm::begin([
 			'id' => 'login-form',
 			'fieldConfig' => [
-				'template' => "{input}<div class=\"col-lg-8\">{hint}</div>",
+				'template' => "{input}<div class=\"col-lg-8\">{hint}</div>{error}",
 			],
 		]); ?>
 		<?= $form->field($model, 'username')->label(false)->hint('　')->textInput(['class'=>'name','placeholder'=>'请输入账号','autofocus'=>true]) ?>
 
-		<?= $form->field($model, 'password')->passwordInput(['class'=>'pswd','placeholder'=>'请输入密码'])->hint('　')->label(false) ?>
+		<?= $form->field($model, 'password')->passwordInput(['class'=>'pswd','placeholder'=>'请输入密码'])->hint('　',['id'=>'rt'])->label(false) ?>
 
 
 		<?= $form->field($model, 'verifyCode')->widget(yii\captcha\Captcha::className(), [
@@ -45,3 +45,13 @@ $this->params['breadcrumbs'][] = $this->title;
 		<p>关注我有惊喜！</p>
 	</div>
 </div>
+<?php \frontend\components\JsBlock::begin()?>
+    <script>
+	    $(function(){
+			if($('input[type="password"]').parent().hasClass('has-error')){
+				
+				$('#rt').text('用户名或密码错误');
+			}
+		})
+    </script>
+<?php \frontend\components\JsBlock::end()?>

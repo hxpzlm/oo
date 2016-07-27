@@ -43,6 +43,7 @@ class Shop extends \yii\db\ActiveRecord
             [['add_user_name'], 'string', 'max' => 20],
             ['name', 'filter', 'filter' => 'trim'],
             ['name', 'required','message'=>'平台名称不能为空'],
+            [['name'], 'unique', 'filter'=>['store_id'=>Yii::$app->user->identity->store_id], 'message'=>'平台名称已存在'],
             ['sort', 'required','message'=>'顺序不能为空'],
         ];
     }

@@ -44,7 +44,7 @@ class Customers extends \yii\db\ActiveRecord
         return [
             [['store_id', 'shop_id', 'sex', 'type', 'sort', 'add_user_id', 'create_time'], 'integer','message'=>'必须是数字'],
             [['remark'], 'string'],
-            [['username', 'mobile', 'add_user_name'], 'string', 'max' => 20],
+            [['username', 'mobile', 'add_user_name'], 'string', 'max' => 100],
             [['real_name'], 'string', 'max' => 50],
             [['store_name', 'shop_name'], 'string', 'max' => 32],
             [['customer_source'], 'string', 'max' => 100],
@@ -52,9 +52,7 @@ class Customers extends \yii\db\ActiveRecord
             [['address'], 'string', 'max' => 80],
             [['shop_id'], 'required','message'=>'请选择客户来源'],
             [['username'], 'required','message'=>'客户帐号不能为空'],
-            //[['username'], 'unique', 'targetClass' => '\frontend\models\customers', 'targetAttribute'=>['username'=>'ccc'], 'message' => '客户帐号已存在'],
-            [['real_name'], 'required','message'=>'姓名不能为空'],
-            [['mobile'], 'required','message'=>'联系电话不能为空'],
+            [['username'], 'unique', 'filter'=>['store_id'=>Yii::$app->user->identity->store_id], 'message' => '客户帐号已存在'],
             [['sort'], 'required','message'=>'顺序不能为空'],
         ];
     }

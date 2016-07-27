@@ -43,17 +43,13 @@ $expressway_info = \frontend\components\Search::SearchExpressway();
         <?php foreach($countries as $item):?>
 
             <tr>
-                <td align="left" width="5%"><input type="text" name="sort[<?=$item['delivery_id']?>]" value="<?echo $item['sort']?>"></td>
-                <td width="15%"><? echo $item['name'] ?></td>
-                <td width="5%"><?php if($item['status']==1){echo '正常';}else{echo '停用';} ?></td>
-                <td><? echo $item['remark'] ?></td>
-                <td align="right" width="10%">
+                <td class="table-left" width="8%">&nbsp;<input type="text" name="sort[<?=$item['delivery_id']?>]" value="<?echo $item['sort']?>"></td>
+                <td width="17%" class="table-left"><? echo $item['name'] ?></td>
+                <td width="8%"><?php if($item['status']==1){echo '正常';}else{echo '停用';} ?></td>
+                <td class="table-left"><? echo $item['remark'] ?></td>
+                <td width="5%">
                     <?php if(Yii::$app->authManager->checkAccess(Yii::$app->user->identity->id,'expressway/delete')==true){;?>
-                        <?=Html::a('<i class="iconfont">&#xe605;</i>',['expressway/delete','id'=>$item['delivery_id']],
-                            ['class'=>'orders-infosc',
-                                'data'=>[ 'confirm' => '您确定要删除这条记录吗？删除后不可恢复！',
-                                    'method' => 'post',],
-                            ])?>
+                        <a class="orders-infosc" href="javascript:;" nctype="<?=$item['delivery_id']?>"><i class="iconfont">&#xe605;</i></a>
                     <?php }?>
                     <?php if(Yii::$app->authManager->checkAccess(Yii::$app->user->identity->id,'expressway/update')==true){?>
                         <a href="<?=Url::to(['expressway/update','id'=>$item['delivery_id']])?>"><i class="iconfont">&#xe603;</i></a>
@@ -71,6 +67,14 @@ $expressway_info = \frontend\components\Search::SearchExpressway();
         'pagination' => $pagination,
     ]);;?>
 </div>
+    <div class="orders-sc">
+        <p class="orders-sct1 clearfix">删除<i class="iconfont">&#xe608;</i></p>
+        <p class="orders-sct2">您确定要删除这条记录吗？删除后不可恢复！</p>
+        <div class="orders-sct3">
+            <a href="" data-method="post"><span class="orders-sct3qx" style="cursor: pointer">确定</span></a>
+            <span style="cursor: pointer">取消</span>
+        </div>
+    </div>
 <?php \frontend\components\JsBlock::begin()?>
     <script>
         $(function(){
@@ -79,7 +83,24 @@ $expressway_info = \frontend\components\Search::SearchExpressway();
                     <?php foreach($expressway_info as $v){?>
                     {title:"<?=$v['name']?>"},
                     <?php }?>
-                ]
+                ],
+                callback:function(data){
+                    $(".close_btn img").show();
+                    $(".close_btn img").click(function(){
+                        $("input[name='name']").val('');
+                        $(this).hide();
+                    })
+                }
+            });
+            //删除
+            var sc;
+            $('.orders-infosc').click(function(){
+                var id = $(this).attr('nctype');
+                $('.orders-sct3>a').attr('href','<?=Url::to(['expressway/delete'])?>&id='+id);
+                sc = $(".orders-sc").bPopup();
+            })
+            $(".orders-sct1 i,.orders-sct3 span").click(function(){
+                sc.close();
             });
         });
     </script>

@@ -41,11 +41,11 @@ $order = \frontend\components\Search::SearchOrder();
             <th>条形码</th>
             <th>商品数量</th>
             <th>实收款</th>
-            <th>创建时间</th>
+            <th>物流公司</th>
         </tr>
         <?php foreach($dataProvider as $item){ ?>
             <tr>
-                <td>
+                <td width="5%" class="table-left">&nbsp;
                     <?php
                     if($item['warehouse_id']>0){
                         $v = $query->select('name')->from($tablePrefix.'warehouse')->where('warehouse_id='.$item['warehouse_id'])->one();
@@ -53,34 +53,39 @@ $order = \frontend\components\Search::SearchOrder();
                     }
                     ?>
                 </td>
-                <td><?=$item['address']['accept_name'];?></td>
-                <td><?=$item['address']['accept_mobile'];?></td>
-                <td><?=$item['address']['accept_address'];?></td>
-                <td><?=$item['address']['zcode'];?></td>
-                <td><?=$item['address']['accept_idcard'];?></td>
-                <td>
+                <td width="5%"><?=$item['accept_name'];?></td>
+                <td width="6%"><?=$item['accept_mobile'];?></td>
+                <td width="18%" class="table-left"><?=$item['accept_address'];?></td>
+                <td width="6%"><?=$item['zcode'];?></td>
+                <td width="9%"><?=$item['accept_idcard'];?></td>
+                <?php
+                if($item['order_id']>0){
+                    $data = $query->select('goods_id,goods_name,spec,brand_name,number')->from($tablePrefix.'order_goods')->where(['order_id'=>$item['order_id']])->all();
+                }
+                ?>
+
+                <td class="table-left">
                     <?php
-                    if(!empty($item['data'])){
-                        foreach($item['data'] as $v){
+                    if(!empty($data)){
+                        foreach($data as $v){
                             echo BaseStringHelper::truncate($v['goods_name'],32).'&nbsp'.$v['spec'].'<br/>';
                         }
                     }
                     ?>
                 </td>
-                <td>
+                <td width="7%">
                     <?php
-                    if(!empty($item['data'])){
-                        foreach($item['data'] as $v){
+                    if(!empty($data)){
+                        foreach($data as $v){
                             echo $v['brand_name'].'<br/>';
                         }
                     }
                     ?>
                 </td>
-                <td>
+                <td width="6%">
                     <?php
-                    if(!empty($item['data'])){
-                        foreach($item['data'] as $v){
-
+                    if(!empty($data)){
+                        foreach($data as $v){
                             if($v['goods_id']>0){
                                 $v = $query->select('barode_code')->from($tablePrefix.'goods')->where('goods_id='.$v['goods_id'])->one();
                                 echo $v['barode_code'].'<br/>';
@@ -89,18 +94,18 @@ $order = \frontend\components\Search::SearchOrder();
                     }
                     ?>
                 </td>
-                <td>
+                <td width="3%">
                     <?php
-                    if(!empty($item['data'])){
-                        foreach($item['data'] as $v){
+                    if(!empty($data)){
+                        foreach($data as $v){
                             echo $v['number'].'<br/>';
                         }
                     }
                     ?>
                 </td>
 
-                <td><?=$item['real_pay'];?> 元</td>
-                <td class="table-tdw"><?= date('Y-m-d H:i:s',$item['create_time']); ?></td>
+                <td width="5%" class="table-right"><?=$item['real_pay'];?>元</td>
+                <td width="10%"><?=$item['delivery_name']?></td>
             </tr>
         <?php } ?>
     </table>
@@ -122,6 +127,12 @@ $order = \frontend\components\Search::SearchOrder();
                 ],
                 callback:function(data){
                     $("input[name='warehouse_id']").val(data.result.warehouse_id);
+
+                    $(".close_btn img").show();
+                    $(".close_btn img").click(function(){
+                        $("input[name='warehouse_name']").val('');
+                        $(this).hide();
+                    })
                 }
             });
 

@@ -56,6 +56,12 @@ class SuppliersController extends CommonController
         $s_con = Yii::$app->request->queryParams;
         $name = !empty($s_con['SuppliersSearch']['name']) ? $s_con['SuppliersSearch'] : '';
         $query = Suppliers::find();
+        $store_id = Yii::$app->user->identity->store_id;
+
+        if($store_id>0){
+            $where['store_id'] = $store_id;
+            $query->where($where);
+        }
         if (!empty($name)) $query->andFilterWhere(['like', 'name',$name]); //供应商名称
         $countQuery = clone $query;
         $pages = new Pagination(['totalCount' => $countQuery->count(),'defaultPageSize'=>20]);
@@ -102,8 +108,17 @@ class SuppliersController extends CommonController
     public function actionCreate()
     {
         $model = new Suppliers();
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->suppliers_id]);
+        if ($model->load(Yii::$app->request->post())) {
+
+            if (Yii::$app->request->isAjax) {
+                Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+                return \yii\bootstrap\ActiveForm::validate($model);
+            }
+
+            if($model->save()){
+                return $this->redirect(['view', 'id' => $model->suppliers_id]);
+            }
+
         } else {
             return $this->render('create', [
                 'model' => $model,
@@ -121,10 +136,15 @@ class SuppliersController extends CommonController
     {
         $model = $this->findModel($id);
         if ($model->load(Yii::$app->request->post())) {
-          //  var_dump(Yii::$app->request->post());exit;
-                $model->save();
 
-            return $this->redirect(['view', 'id' => $model->suppliers_id]);
+            if (Yii::$app->request->isAjax) {
+                Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+                return \yii\bootstrap\ActiveForm::validate($model);
+            }
+            if($model->save()){
+                return $this->redirect(['view', 'id' => $model->suppliers_id]);
+            }
+
         } else {
             return $this->render('update', [
                 'model' => $model,

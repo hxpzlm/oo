@@ -22,6 +22,7 @@ $this->registerJs("!function(){
 $query = new \yii\db\Query();
 $tablePrefix = Yii::$app->getDb()->tablePrefix;
 $order = \frontend\components\Search::SearchOrder();
+$goods_list = \frontend\components\Search::SearchGoods();
 
 ?>
 <!--内容-->
@@ -42,7 +43,7 @@ $order = \frontend\components\Search::SearchOrder();
         </tr>
         <?php foreach($dataProvider as $item){ ?>
             <tr>
-                <td class="table-tdw">
+                <td width="7%" class="table-left">&nbsp;&nbsp;
                     <?php
                     if($item['shop_id']>0){
                         $v = $query->select('name')->from($tablePrefix.'shop')->where('shop_id='.$item['shop_id'])->one();
@@ -50,28 +51,33 @@ $order = \frontend\components\Search::SearchOrder();
                     }
                     ?>
                 </td>
-                <td><?=$item['order_no'];?></td>
-                <td>
+                <td width="12%"><?=$item['order_no'];?></td>
+                <?php
+                if($item['refuse_id']>0){
+                    $data = $query->select('goods_name,spec,number')->from($tablePrefix.'refuse_order_goods')->where(['refuse_id'=>$item['refuse_id']])->all();
+                }
+                ?>
+                <td class="table-left">
                     <?php
-                    if(!empty($item['data'])){
-                        foreach($item['data'] as $v){
+                    if($item['refuse_id']>0){
+                        foreach($data as $v){
                             echo BaseStringHelper::truncate($v['goods_name'],32).'&nbsp'.$v['spec'].'<br/>';
                         }
                     }
                     ?>
                 </td>
-                <td>
+                <td width="5%">
                     <?php
-                    if(!empty($item['data'])){
-                        foreach($item['data'] as $v){
+                    if($item['refuse_id']>0){
+                        foreach($data as $v){
                             echo $v['number'].'<br/>';
                         }
                     }
                     ?>
                 </td>
-                <td><?=$item['refuse_amount'];?> 元</td>
-                <td><?= date('Y-m-d',$item['refuse_time']); ?></td>
-                <td>
+                <td width="7%" class="table-right"><?=$item['refuse_amount'];?> 元</td>
+                <td width="10%"><?= $item['refuse_time']>0?date('Y-m-d',$item['refuse_time']):'';?></td>
+                <td width="10%">
                     <?php
                     if($item['warehouse_id']>0){
                         $v = $query->select('name')->from($tablePrefix.'warehouse')->where('warehouse_id='.$item['warehouse_id'])->one();
@@ -79,17 +85,11 @@ $order = \frontend\components\Search::SearchOrder();
                     }
                     ?>
                 </td>
-                <td><?=$item['status']==1 ? '是':'否'; ?></td>
-                <td><?= $item['confirm_time']>0?date('Y-m-d',$item['confirm_time']):''; ?></td>
-                <td>
+                <td width="5%"><?=$item['status']==1 ? '是':'否'; ?></td>
+                <td width="10%"><?= $item['confirm_time']>0?date('Y-m-d',$item['confirm_time']):''; ?></td>
+                <td width="5%">
                     <?php if(Yii::$app->authManager->checkAccess(Yii::$app->user->identity->id,'refuse-order/delete')){?>
-                        <?= Html::a('<i class="iconfont">&#xe605;</i>', ['delete', 'id' => $item['refuse_id']], [
-                            'class' => 'orders-infosc',
-                            'data' => [
-                                'confirm' => '您确定要删除这条记录吗？删除后不可恢复！',
-                                'method' => 'post',
-                            ],
-                        ]) ?>
+                        <a class="orders-infosc" href="javascript:;" nctype="<?=$item['refuse_id']?>"><i class="iconfont">&#xe605;</i></a>
                     <?php }?>
                     <?php if(Yii::$app->authManager->checkAccess(Yii::$app->user->identity->id,'refuse-order/update')){?>
                         <a href="<?=Url::to(['refuse-order/update','id' => $item['refuse_id']])?>"><i class="iconfont">&#xe603;</i></a>
@@ -106,6 +106,14 @@ $order = \frontend\components\Search::SearchOrder();
         'pagination' => $pages,
     ]);;?>
 </div>
+    <div class="orders-sc">
+        <p class="orders-sct1 clearfix">删除<i class="iconfont">&#xe608;</i></p>
+        <p class="orders-sct2">您确定要删除这条记录吗？删除后不可恢复！</p>
+        <div class="orders-sct3">
+            <a href="" data-method="post"><span class="orders-sct3qx" style="cursor: pointer">确定</span></a>
+            <span style="cursor: pointer">取消</span>
+        </div>
+    </div>
 <?php \frontend\components\JsBlock::begin()?>
     <script>
         $(function(){
@@ -115,7 +123,33 @@ $order = \frontend\components\Search::SearchOrder();
                     <?php foreach($order as $v){?>
                     {title:"<?=$v['order_no']?>"},
                     <?php }?>
+                ],
+                callback:function(data){
+                    $(".close_btn img").show();
+                    $(".close_btn img").click(function(){
+                        $("input[name='order_no']").val('');
+                        $(this).hide();
+                    })
+                }
+            });
+
+            //商品名称
+            $("input[name='goods_name']").bigAutocomplete({
+                width:400,data:[
+                    <?php foreach($goods_list as $v){?>
+                    {title:"<?=$v['name']?>"},
+                    <?php }?>
                 ]
+            });
+            //删除
+            var sc;
+            $('.orders-infosc').click(function(){
+                var id = $(this).attr('nctype');
+                $('.orders-sct3>a').attr('href','<?=Url::to(['refuse-order/delete'])?>&id='+id);
+                sc = $(".orders-sc").bPopup();
+            })
+            $(".orders-sct1 i,.orders-sct3 span").click(function(){
+                sc.close();
             });
         });
     </script>

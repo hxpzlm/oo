@@ -46,7 +46,7 @@ $arr= [
 		<h1>供应链管理系统</h1>
 	</div>
 	<ul class="headrg clearfix">
-		<li>欢迎您，<?=Yii::$app->user->identity->username;?></li>
+		<li>欢迎您，<?=Yii::$app->user->identity->real_name;?></li>
 		<li>|</li>
 		<li class="headrg-exit"><a href="<?=Url::to(['user/profile'])?>">修改资料</a></li>
 		<li>|</li>
@@ -88,6 +88,8 @@ $arr= [
 </ul>
 <!--头部 end-->
 <?=Alert::widget()?>
+<!--笼罩层-->
+<div class="iDiv"></div>
 <?= $content ?>
 <!--底部-->
 <div class="bot-box">

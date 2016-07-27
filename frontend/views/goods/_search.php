@@ -12,7 +12,7 @@ $category= \frontend\models\Goods::GetCategory(0,$cat_id);
     'method' => 'get',
 ]); ?>
     <div class="seeks clearfix">
-        <input type="text" name="name" placeholder="请输入商品中英文名称" value="<?=Yii::$app->request->get('name')?>"/>
+        <div class="close_btn"><input type="text" name="name" placeholder="请输入商品中英文名称" value="<?=Yii::$app->request->get('name')?>"/><img src="statics/img/close_icon.jpg" class="img_css"></div>
         <input type="hidden" name="store_id" value="<?=Yii::$app->user->identity->store_id?>">
         <?= Html::submitButton('<i class="iconfont">&#xe60d;</i>搜索') ?>
         <p class="seeks-xl">更多搜索条件<label>▼</label></p>
@@ -38,6 +38,21 @@ $category= \frontend\models\Goods::GetCategory(0,$cat_id);
             <p>负责人</p>
             <input type="text" placeholder="请输入负责人" name="principal_name"  value="<?=Yii::$app->request->get('supplier_name')?>"/>
         </div>
+        <?php
+        if(Yii::$app->user->identity->username=='admin'){
+            //获取入驻商家
+            $store_list = \frontend\components\Search::SearchStore();
+            ?>
+            <div class="seeks-boxs clearfix">
+                <p>入驻商家</p>
+                <select name="store_id">
+                    <option <?php if(''==Yii::$app->request->get('store_id')){echo 'selected';};?> value=''>请选择</option>
+                    <?php foreach($store_list as $value){?>
+                        <option <?php if($value['store_id']==Yii::$app->request->get('store_id')){echo 'selected';};?> value="<?=$value['store_id']?>"><?=$value['name']?></option>
+                    <?php }?>
+                </select>
+            </div>
+        <?php }?>
     </div>
 <?php ActiveForm::end(); ?>
 <div class="seeks-boxs seeks-boxst1 clearfix">

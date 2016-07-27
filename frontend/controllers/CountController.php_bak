@@ -1,0 +1,259 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: Administrator
+ * Date: 2016/7/1
+ * Time: 15:04
+ */
+namespace frontend\controllers;
+use frontend\models\SaleTotle;
+use frontend\models\ShopSale;
+use Yii;
+use yii\data\Pagination;
+use yii\db\Query;
+
+/**
+ * OrderController implements the CRUD actions for Order model.
+ */
+class CountController extends CommonController{
+
+       public function actionShop(){
+           $s_con = Yii::$app->request->queryParams;
+           $sale_time_start = strtotime(Yii::$app->request->get('sale_time_start')); //销售开始时间
+           $sale_time_end = strtotime(Yii::$app->request->get('sale_time_end').' 23:59:59'); //销售结束时间
+           $obj = ShopSale::find();
+           $model = (new Query())->from(Yii::$app->getDb()->tablePrefix.'shop_sale')
+               ->select('shop_id,shop_name,sum(totle_price) as amount,sum(sale_nums) as sale_nums')
+               ->groupBy(['shop_id'])->orderBy(['amount'=>SORT_DESC]);
+           $refuse = (new Query())->from(Yii::$app->getDb()->tablePrefix.'shop_refuse')
+               ->groupBy(['shop_id'])->orderBy(['shop_id'=>SORT_ASC]);
+           if(Yii::$app->user->identity->store_id>0){
+               $model->andFilterWhere(['store_id'=>Yii::$app->user->identity->store_id]);
+               $obj->andFilterWhere(['store_id'=>Yii::$app->user->identity->store_id]);
+               $refuse->andFilterWhere(['store_id'=>Yii::$app->user->identity->store_id]);
+           }
+           if(!empty($s_con['shop_name'])){
+               $model->andFilterWhere(['like','shop_name',$s_con['shop_name']]);
+           }
+           if($sale_time_start<=$sale_time_end) {
+               if(!empty($sale_time_start)) {
+                   $model->andWhere(['>=','sale_time',$sale_time_start]);
+                   $obj->andWhere(['>=','sale_time',$sale_time_start]);
+                   $refuse->andFilterWhere(['>=','refuse_time',$sale_time_start]);
+               }
+               if(!empty($sale_time_end)) {
+                   $obj->andWhere(['<=','sale_time',$sale_time_end]);
+                   $model->andWhere(['<=','sale_time',$sale_time_end]);
+                   $refuse->andFilterWhere(['<=','refuse_time',$sale_time_end]);
+               }
+           }
+           $count =  $obj->sum('totle_price');
+           $countQuery = clone $model;
+           $robj = clone $refuse;
+           $r_count = $robj->sum('totle_price');
+           $pages = new Pagination(['totalCount' => $countQuery->count(),'defaultPageSize'=>20]);
+           $dataProvider = $model->offset($pages->offset)->limit($pages->limit)->all();
+           $refuse->addSelect('shop_id,sum(totle_price) as r_amount,sum(refuse_nums) as refuse_nums');
+           $refuse_data = $refuse->all();
+           foreach ($dataProvider as $k=>$v){
+               foreach ($refuse_data as $val){
+                    if($v['shop_id']==$val['shop_id']){
+                        $dataProvider[$k]['r_amount']=$val['r_amount'];
+                        $dataProvider[$k]['refuse_nums']=$val['refuse_nums'];
+                    }else{
+                        $dataProvider[$k]['r_amount']="";
+                        $dataProvider[$k]['refuse_nums']="";
+                    }
+               }
+           }
+           //导出表格
+           if(Yii::$app->request->get('action')=='export'){
+               $final = [['销售平台','销售笔数(笔)','销售金额(元)', '客单价(元)','销售占比','退货笔数(笔)','退货金额(元)','退货占比']];
+               foreach ($countQuery->all() as $k=>$v){
+                   foreach ($refuse_data as $val){
+                       if($v['shop_id']==$val['shop_id']){
+                           $amount=$val['r_amount'];
+                           $nums=$val['refuse_nums'];
+                       }else{
+                           $amount='0.00';
+                           $nums='0';
+                       }
+                   }
+                   $final[]=[
+                       $v['shop_name']."\t",$v['sale_nums'],$v['amount'],round($v['amount']/$v['sale_nums'],2),round(($v['sale_nums']/$count)*100,2)."%\t",
+                       $nums,$amount,($r_count>0)?round(($nums/$r_count)*100,2)."%\t":"0"."%\t"
+                   ];
+
+               }
+               $outFile = 'feed/'.date("YmdHis") . '.xls';
+               $ret = \frontend\extend\PHPExcel\Excel::getInstance()->saveSheet($outFile, $final);
+               if($ret){
+                   return $this->redirect('/'.$outFile);
+               }
+
+           }
+           return $this->render('shop',[
+               'model'=>$dataProvider,
+               'count'=>$count,
+               'r_count'=>$r_count,
+               'pagination'=>$pages,
+           ]);
+       }
+
+    public function actionDetails()
+    {
+        $s_con = Yii::$app->request->queryParams;
+        $sale_time_start = strtotime(Yii::$app->request->get('sale_time_start')); //销售开始时间
+        $sale_time_end = strtotime(Yii::$app->request->get('sale_time_end').' 23:59:59'); //销售结束时间
+        $order = (new Query())->from(Yii::$app->getDb()->tablePrefix.'shop_chuku')
+        ->select('shop_name,goods_id,goods_name,brand_name,spec,unit_name,sum(nums) as nums,sum(amount) as amount')
+        ->groupBy(['shop_id','goods_id'])->orderBy(['amount'=>SORT_DESC]);
+        $pur = (new Query())->from(Yii::$app->getDb()->tablePrefix.'purchase_totle')
+            ->groupBy(['goods_id'])->orderBy(['goods_id'=>SORT_ASC]);
+
+        if(Yii::$app->user->identity->store_id>0){
+            $order->andFilterWhere(['store_id'=>Yii::$app->user->identity->store_id]);
+            $pur->andFilterWhere(['store_id'=>Yii::$app->user->identity->store_id]);
+        }
+        if(!empty($s_con['goods_name'])){
+            $order->andFilterWhere(['like','goods_name',$s_con['goods_name']]);
+            $pur->andFilterWhere(['like','goods_name',$s_con['goods_name']]);
+        }
+        if(!empty($s_con['brand_name'])){
+            $order->andFilterWhere(['like','brand_name',$s_con['brand_name']]);
+            $pur->andFilterWhere(['like','brand_name',$s_con['brand_name']]);
+        }
+        if($sale_time_start<=$sale_time_end) {
+            if(!empty($sale_time_start)) {
+                $order->andWhere(['>=','sale_time',$sale_time_start]);
+            }
+            if(!empty($sale_time_end)) {
+                $order->andWhere(['<=','sale_time',$sale_time_end]);
+                $pur->andWhere(['<=','buy_time',$sale_time_end]);
+            }else{
+                $pur->andWhere(['<=','buy_time',time()]);
+            }
+        }
+        $countQuery = clone $order;
+        $p_data = $pur->addSelect('goods_id,(sum(totle_price)/sum(nums)) as ng')->all();
+        $pages = new Pagination(['totalCount' => $countQuery->count(),'defaultPageSize'=>20]);
+        $dataProvider = $order->offset($pages->offset)->limit($pages->limit)->all();
+        foreach ($dataProvider as $k=>$v){
+                foreach ($p_data as $val){
+                    if($v['goods_id']==$val['goods_id']){
+                        $dataProvider[$k]['avg']=round($val['ng'],2);
+                    }
+                }
+        }
+
+        //导出表格
+        if(Yii::$app->request->get('action')=='export'){
+            $final = [['销售平台','商品中英文名称','规格', '品牌','单位','销售数量','销售成本{元)','销售金额{元)']];
+            foreach ($countQuery->all() as $k=>$v){
+                foreach ($p_data as $val){
+                    if($v['goods_id']==$val['goods_id']){
+                        $avg=round($val['ng'],2);
+                    }
+                }
+                $final[]=[
+                    $v['shop_name']."\t",$v['goods_name']."\t",$v['brand_name']."\t",$v['spec'],$v['unit_name'],
+                    $v['nums'],$avg*$v['nums'],$v['amount']
+                ];
+
+            }
+            $outFile = 'feed/'.date("YmdHis") . '.xls';
+            $ret = \frontend\extend\PHPExcel\Excel::getInstance()->saveSheet($outFile, $final);
+            if($ret){
+                return $this->redirect('/'.$outFile);
+            }
+
+        }
+        return $this->render('details',[
+            'model'=>$dataProvider,
+            'pagination'=>$pages,
+        ]);
+    }
+
+    public function actionErp(){
+        $s_con = Yii::$app->request->queryParams;
+        $wh =[];
+        $time_start = strtotime(Yii::$app->request->get('time_start')); //销售开始时间
+        $time_end = strtotime(Yii::$app->request->get('time_end').' 23:59:59'); //销售结束时间
+        $erp = (new Query())->from(Yii::$app->getDb()->tablePrefix.'jxc')->groupBy(['goods_id']);
+        $sobj = (new Query())->from(Yii::$app->getDb()->tablePrefix.'sale_totle');
+        if(Yii::$app->user->identity->store_id>0){
+            $erp->andFilterWhere(['store_id'=>Yii::$app->user->identity->store_id]);
+            $wh['store_id'] = Yii::$app->user->identity->store_id;
+        }
+
+        if(!empty($s_con['goods_name'])){
+            $erp->andWhere(['like','goods_name',$s_con['goods_name']]);
+            $sobj->andWhere(['like','goods_name',$s_con['goods_name']]);
+        }
+        if(!empty($s_con['brand_name'])){
+            $erp->andWhere(['like','brand_name',$s_con['brand_name']]);
+            $sobj->andWhere(['like','brand_name',$s_con['brand_name']]);
+
+        }
+        if(!empty($s_con['warehouse_id'])){
+            $erp->andWhere(['warehouse_id'=>$s_con['warehouse_id']]);
+            $wh['warehouse_id']= $s_con['warehouse_id'];
+        }
+
+        if($time_start<=$time_end) {
+            if(!empty($time_start)) {
+                $sobj->andWhere(['>=','buy_time',$time_start]);
+            }
+            if(!empty($time_end)) {
+                $erp->andWhere(['<=','purchase_time',$time_end]);
+                $sobj->andWhere(['<=','buy_time',$time_end]);
+            }
+        }
+        $countQuery = clone $erp;
+        $ssobj =clone $sobj;
+        $erp->addSelect('goods_id,goods_name,spec,brand_name,unit_name,buy_price,sum(p_nums) as p_nums,(sum(p_nums)*buy_price) as p_price')
+            ->addOrderBy(['p_price'=>SORT_DESC]);
+        $pages = new Pagination(['totalCount' => $countQuery->count(),'defaultPageSize'=>20]);
+        $dataProvider = $erp->offset($pages->offset)->limit($pages->limit)->all();
+        foreach ($dataProvider as $k=>$v){
+            $wh['goods_id'] = $v['goods_id'];
+            $totle = $sobj->where($wh)->addSelect('sum(totle_price) totle_price')->one();
+            $nums = $ssobj->where($wh)->addSelect('sum(nums) as nums')->one();
+            $dataProvider[$k]['totle_price']=$totle['totle_price'];
+            $dataProvider[$k]['s_nums']=$nums['nums'];
+        }
+        return $this->render('erp',[
+            'model'=>$dataProvider,
+            'pagination'=>$pages,
+        ]);
+
+    }
+
+    public function actionPdetails(){
+        $s_con = Yii::$app->request->queryParams;
+        $erp = (new Query())->from(Yii::$app->getDb()->tablePrefix.'jxc')->groupBy(['goods_id']);
+        if(Yii::$app->user->identity->store_id>0){
+            $erp->andFilterWhere(['store_id'=>Yii::$app->user->identity->store_id]);
+        }
+        if(!empty($s_con['goods_name'])){
+            $erp->andWhere(['like','goods_name',$s_con['goods_name']]);
+        }
+        if(!empty($s_con['brand_name'])){
+            $erp->andWhere(['like','brand_name',$s_con['brand_name']]);
+        }
+        $countQuery = clone $erp;
+        $erp->addSelect('goods_id,goods_name,spec,brand_name,unit_name,buy_price');
+        $pages = new Pagination(['totalCount' => $countQuery->count(),'defaultPageSize'=>20]);
+        $dataProvider = $erp->offset($pages->offset)->limit($pages->limit)->all();
+        return $this->render('pdetails',[
+            'model'=>$dataProvider,
+            'time' => empty($s_con['time'])?date('Ym',time()):$s_con['time'],
+            'pagination'=>$pages,
+        ]);
+
+
+
+    }
+}
+
+?>

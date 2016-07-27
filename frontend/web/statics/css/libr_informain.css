@@ -1,0 +1,117 @@
+.libr_informain{
+	width: 1300px;
+	margin: 0 auto;
+	clear: both;
+	border: 1px solid #CCCCCC;
+	margin-bottom: 10px;
+}
+
+.title_name{
+	width: 100%;
+	padding: 5px 0;
+	text-align: center;
+	display: block;
+	background: #F2F2F2;
+	border-bottom: 1px solid #FFFFFF;
+}
+
+.infor_box{
+	width: 100%;
+	min-height: 30px;
+	border-bottom: 1px solid #FFFFFF;
+	background: #F2F2F2;
+}
+
+.infor_box span{
+	width: 10%;
+	height: 30px;
+	line-height: 30px;
+	text-align: right;
+	display: block;
+	float: left;
+}
+
+.infor_box span.infor_span{
+	display: block;
+}
+
+.infor_box p,
+.strip_data{
+	width: 88%;
+	height: 30px;
+	line-height: 30px;
+	float: left;
+	padding: 0 1%;
+	background: #FFFFFF;
+}
+
+.strip_data p{
+	width: 50%;
+	padding: 0;
+	font-size: 12px;
+}
+
+.strip_data label{
+	width: 11%;
+	height: 30px;
+	line-height: 30px;
+	display: block;
+	float: left;
+	text-align: center;
+	overflow: hidden;
+}
+
+.infor_reason p,
+.infor_reason span{
+	height: 80px;
+	line-height: 80px;
+	background: #F2F2F2;
+}
+
+.infor_reason p{
+	background: #FFFFFF;
+}
+
+.btn_box{
+	width: 1300px;
+	height: 35px;
+	margin: 0 auto;
+}
+
+.btn_box a{
+	width: 100px;
+	height: 35px;
+	line-height: 35px;
+	text-align: center;
+	float: right;
+	display: block;
+	border: 1px solid #808080;
+	color: #808080;
+	border-radius: 5px;
+}
+
+
+/*2016/7/19新增*/
+.container{
+	font-size: 12px;
+}
+
+.title_name{
+	font-size: 14px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

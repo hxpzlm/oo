@@ -56,12 +56,15 @@ class CustomersController extends CommonController
     public function actionIndex()
     {
         $searchModel = new CustomersSearch();
-
         $s_con = Yii::$app->request->queryParams;
         $username = !empty($s_con['CustomersSearch']['username']) ? $s_con['CustomersSearch'] : '';
-
-
         $query = Customers::find();
+        $store_id = Yii::$app->user->identity->store_id;
+        if($store_id>0){
+            $where['store_id'] = $store_id;
+            $query->where($where);
+        }
+
         if (!empty($username)) $query->andFilterWhere(['like', 'username',$username]); //客户帐号
         $countQuery = clone $query;
         $pages = new Pagination(['totalCount' => $countQuery->count(),'defaultPageSize'=>20]);
@@ -111,9 +114,15 @@ class CustomersController extends CommonController
         $model = new Customers();
         $address = (new \yii\db\ActiveRecord)->tableName();
         if ($model->load(Yii::$app->request->post())) {
-            $address1 = Yii::$app->request->post('Address');
+            if (Yii::$app->request->isAjax) {
+                Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+                return \yii\bootstrap\ActiveForm::validate($model);
+            }
+
             //插入收货地址表
             if($model->save()){
+                $address1 = Yii::$app->request->post('Address');
+
                 $count = count($address1['accept_name']);
                 for($i=0; $i<$count; $i++){
                     yii::$app->db->createCommand()
@@ -154,43 +163,34 @@ class CustomersController extends CommonController
         $address = $this->findAddressModel($id);
         $tablePrefix = Yii::$app->getDb()->tablePrefix;
         if ($model->load(Yii::$app->request->post())) {
-            $address1 = Yii::$app->request->post('Address');
+            if (Yii::$app->request->isAjax) {
+                Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+                return \yii\bootstrap\ActiveForm::validate($model);
+            }
+
             //插入收货地址表
             if($model->save()){
-                $count = count($address1['accept_name']);
-                for($i=0; $i<$count; $i++){
-                    if(!empty($address1['address_id'][$i])){
-                        yii::$app->db->createCommand()
-                            ->update($tablePrefix.'address', [
-                                'customers_id' => $model->attributes['customers_id'],
-                                'accept_name' => $address1['accept_name'][$i],
-                                'accept_mobile' => $address1['accept_mobile'][$i],
-                                'accept_address' => $address1['accept_address'][$i],
-                                'accept_idcard' => $address1['accept_idcard'][$i],
-                                'is_idcard' => isset($address1['is_idcard'][$i]) ? $address1['is_idcard'][$i] : 0,
-                                //'idcard_url' => $address1['idcard_url'][$i],
-                                'zcode' => $address1['zcode'][$i],
-                                'add_user_id' => $model->add_user_id,
-                                'add_user_name' => $model->add_user_name,
-                                'create_time' => $model->create_time
-                            ],'address_id='.$address1['address_id'][$i])->execute();
-                    }else{
-                        yii::$app->db->createCommand()
-                            ->insert($tablePrefix.'address', [
-                                'customers_id' => $model->attributes['customers_id'],
-                                'accept_name' => $address1['accept_name'][$i],
-                                'accept_mobile' => $address1['accept_mobile'][$i],
-                                'accept_address' => $address1['accept_address'][$i],
-                                'accept_idcard' => $address1['accept_idcard'][$i],
-                                'is_idcard' => isset($address1['is_idcard'][$i]) ? $address1['is_idcard'][$i] : 0,
-                                //'idcard_url' => $address1['idcard_url'][$i],
-                                'zcode' => $address1['zcode'][$i],
-                                'add_user_id' => $model->add_user_id,
-                                'add_user_name' => $model->add_user_name,
-                                'create_time' => $model->create_time
-                            ])->execute();
-                    }
+                $address1 = Yii::$app->request->post('Address');
 
+                $count = count($address1['accept_name']);
+                yii::$app->db->createCommand()->delete($tablePrefix.'address','customers_id='.$id)->execute();
+
+                for($i=0; $i<$count; $i++){
+
+                    yii::$app->db->createCommand()
+                        ->insert($tablePrefix.'address', [
+                            'address_id'    => !empty($address1['address_id'][$i])?$address1['address_id'][$i]:'',
+                            'customers_id' => $id,
+                            'accept_name' => $address1['accept_name'][$i],
+                            'accept_mobile' => $address1['accept_mobile'][$i],
+                            'accept_address' => $address1['accept_address'][$i],
+                            'accept_idcard' => $address1['accept_idcard'][$i],
+                            'is_idcard' => isset($address1['is_idcard'][$i]) ? $address1['is_idcard'][$i] : 0,
+                            'zcode' => $address1['zcode'][$i],
+                            'add_user_id' => $model->add_user_id,
+                            'add_user_name' => $model->add_user_name,
+                            'create_time' => $model->create_time
+                        ])->execute();
                 }
             }
             return $this->redirect(['view', 'id' => $model->customers_id]);
@@ -240,7 +240,7 @@ class CustomersController extends CommonController
      */
     protected function findAddressModel($id)
     {
-        if (($address = (new \yii\db\Query())->from(Yii::$app->getDb()->tablePrefix.'address')->where('customers_id='.$id)->all()) !== null) {
+        if (($address = (new \yii\db\Query())->from(Yii::$app->getDb()->tablePrefix.'address')->where('customers_id='.$id)->orderBy(['create_time'=>SORT_ASC])->all()) !== null) {
             return $address;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');

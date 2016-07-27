@@ -22,7 +22,7 @@ $store = \frontend\models\Store::findAll($wh);
     <h4 class="orders-newtade">账号信息</h4>
     <div class="orders-new clearfix">
         <p>账号:</p>
-        <?= $form->field($model, 'username')->textInput(['autofocus' => true])->label(false)->hint('<label>* 帐号不可重复！编辑账号不会修改其密码</label>')?>
+        <?= $form->field($model, 'username')->textInput(['autofocus' => true,'disabled'=>'disabled'])->label(false)->hint('<label>* 帐号不可重复！编辑账号不会修改其密码</label>')?>
     </div>
     <div class="orders-new clearfix">
         <p>入驻商家:</p>
@@ -49,7 +49,7 @@ $store = \frontend\models\Store::findAll($wh);
     <h4 class="orders-newtade">用户信息</h4>
     <div class="orders-new clearfix">
         <p>姓名:</p>
-        <?= $form->field($model, 'real_name')->textInput()->label(false)->hint('<label>* </label>') ?>
+        <?= $form->field($model, 'real_name')->textInput(['disabled'=>'disabled'])->label(false)->hint('<label>* </label>') ?>
     </div>
     <div class="orders-new clearfix">
         <p>性别:</p>
@@ -87,8 +87,8 @@ $store = \frontend\models\Store::findAll($wh);
                 <tr><td>首页</td></tr>
                 <tr style="height: 54px; line-height: 54px"><td>采购</td></tr>
                 <tr style="height: 108px; line-height: 108px"><td>销售</td></tr>
-                <tr style="height: 162px; line-height: 162px"><td>库存</td></tr>
-				<tr><td>统计</td></tr>
+                <tr style="height: 216px; line-height: 216px"><td>库存</td></tr>
+                <tr style="height: 135px; line-height: 135px"><td>统计</td></tr>
                 <tr style="height: 108px; line-height: 108px"><td>商品</td></tr>
                 <tr style="height: 54px; line-height: 54px"><td>系统设置</td></tr>
                 </tbody>
@@ -126,9 +126,9 @@ $store = \frontend\models\Store::findAll($wh);
                         <?php if($v['name']=='user/profile'){?>
                             <input type="hidden" name="child[]"  value="<?=$v['name']?>" >
                         <?}else{?>
-                            <?php if($v['name']=='cstocks/handle' || $v['name']=='refuse/handle' || $v['name']=='sale/handle'){?>
-                                <td></td><td></td><td></td><td><input type="checkbox" name="child[]"  value="<?=$v['name']?>" <?php if(Yii::$app->authManager->checkAccess($model['user_id'],$v['name'])){?>checked="checked"<?php }?>></td>
-                            <?php }else{?>
+                             <?php if($v['name']=='cstocks/handle' || $v['name']=='refuse/handle' || $v['name']=='sale/handle'){?>
+                               <td></td><td></td><td></td><td><input type="checkbox" name="child[]"  value="<?=$v['name']?>" <?php if(Yii::$app->authManager->checkAccess($model['user_id'],$v['name'])){?>checked="checked"<?php }?>></td>
+                           <?php }else{?>
                                 <td><input type="checkbox" name="child[]"  value="<?=$v['name']?>" <?php if(Yii::$app->authManager->checkAccess($model['user_id'],$v['name'])){?>checked="checked"<?php }?>></td>
                             <?php } ?>
                         <?php }?>
@@ -147,7 +147,7 @@ $store = \frontend\models\Store::findAll($wh);
     <div class="orders-newbut">
         <?=Html::submitButton("保存")?>
         <a href="<?=\yii\helpers\Url::to(['user/index'])?>">
-            <button class="orders-newbut2" type="button">返回</button>
+            <span class="orders-newbut2">返回</span>
         </a>
     </div>
     <?php ActiveForm::end(); ?>
@@ -169,13 +169,17 @@ $store = \frontend\models\Store::findAll($wh);
 						data:{username:$(this).val()},
 						success:function(data){
 							if(data.status==1){
-								if(data.user_id!=<?=$model->user_id?>){
+								if(data.user_id==<?=$model->user_id?>){
+									$('input[name="User[username]"]').siblings(".hint-block").text('');
+									$('button[type="submit"]').removeAttr('disabled');
+								}else{
 									$('input[name="User[username]"]').siblings(".hint-block").text('该用户名已被占用');
-                                    $('button[type="submit"]').attr('disabled','disabled');
+									$('button[type="submit"]').attr('disabled','disabled');
+							
 								}
-                                $('button[type="submit"]').removeAttr('disabled');
 							}
 							if(data.status==0){
+								$('input[name="User[username]"]').siblings(".hint-block").text('');
 								$('button[type="submit"]').removeAttr('disabled');
 							}
 						}
@@ -205,6 +209,7 @@ $store = \frontend\models\Store::findAll($wh);
 							if(data.status==1){
 								if(data.user_id==<?=$model->user_id?>){
 									$('input[name="User[mobile]"]').siblings(".hint-block").text('');
+									$('button[type="submit"]').removeAttr('disabled');
 								}else{
 									$('input[name="User[mobile]"]').siblings(".hint-block").text('该手机号码已被占用');
 									$('button[type="submit"]').attr('disabled','disabled');

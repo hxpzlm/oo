@@ -7,8 +7,8 @@ use frontend\assets\AppAsset;
 use yii\helpers\Html;
 use yii\widgets\Breadcrumbs;
 use common\widgets\Alert;
-
 AppAsset::register($this);
+$this->registerJsFile('@web/statics/js/js_plug/jquery.cookie.js',['depends'=>['yii\web\YiiAsset']]);
 ?>
 <?php $this->beginPage() ?>
 

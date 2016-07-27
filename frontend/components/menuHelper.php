@@ -6,7 +6,11 @@
  * Time: 14:48
  */
 namespace frontend\components;
+use common\models\User;
+use frontend\models\StocksModel;
 use frontend\models\WarehouseModel;
+use frontend\models\Warning;
+use frontend\models\WarningInfo;
 use Yii;
 use yii\caching\TagDependency;
 use yii\db\Connection;
@@ -79,7 +83,7 @@ class menuHelper{
         $user = Yii::$app->user->identity;
         $tablePrefix = Yii::$app->getDb()->tablePrefix;
         $query = $query->select(['o.order_id','o.order_no','o.shop_name','o.real_pay'])->from($tablePrefix."order as o")->where($where)->orderBy(['o.create_time'=>SORT_DESC])
-            ->leftJoin(['w'=>$tablePrefix.'warehouse'],"w.warehouse_id=o.warehouse_id");
+            ->innerJoin(['w'=>$tablePrefix.'warehouse'],"w.warehouse_id=o.warehouse_id");
         if($user->store_id>0){
             $query->andWhere(['=','o.store_id',$user->store_id]);
             if(Yii::$app->user->identity->type!=1){
@@ -105,11 +109,26 @@ class menuHelper{
                 $arr[$k]['name'] = $v['name'];
                 $where['name'] = $v['name'];
                 $query->from($tablePrefix.'salenums')->select('smonth,sale_nums')->where($where);
-                $arr[$k]['data'] = $query->andFilterWhere(['like','syear',date('Y',time())])->all();
+                $arr[$k]['data'] = $query->andFilterWhere(['=','syear',date('Y',time())])->all();
             }
             return $arr;
         }
 
+    }
+
+    public static function getSales(){
+        $query = new Query();
+        $arr= array();
+        $user = Yii::$app->user->identity;
+        $tablePrefix = Yii::$app->getDb()->tablePrefix;
+        if($user->store_id>0){
+            $query->from($tablePrefix.'sale as s')->innerJoin(['w'=>$tablePrefix.'warehouse'],'w.warehouse_id=s.warehouse_id')
+                ->where(['s.year'=>date('Y',time()),'s.store_id'=>$user->store_id]);
+            $cou = clone $query;
+            $arr['data']=$query->addSelect('w.warehouse_id,w.name,sale_nums')->orderBy(['sale_nums'=>SORT_DESC])->all();
+            $arr['count']=$cou->sum('s.sale_nums');
+            return $arr;
+        }
     }
 
    //获取采购和库存
@@ -119,7 +138,7 @@ class menuHelper{
         $user = Yii::$app->user->identity;
         $tablePrefix = Yii::$app->getDb()->tablePrefix;
         $query = $query->select(['g.spec','g.purchase_id','g.goods_name','g.brand_name','g.supplier_name','p.totle_price'])->from($tablePrefix."purchase as p")
-            ->leftJoin(['g'=>$tablePrefix.'purchase_goods'],'g.purchase_id=p.purchase_id')->leftJoin(['w'=>$tablePrefix.'warehouse'],'w.warehouse_id=p.warehouse_id')
+            ->innerJoin(['g'=>$tablePrefix.'purchase_goods'],'g.purchase_id=p.purchase_id')->leftJoin(['w'=>$tablePrefix.'warehouse'],'w.warehouse_id=p.warehouse_id')
             ->where($where)->orderBy(['p.create_time'=>SORT_DESC]);
         if($user->store_id>0){
             $query->andWhere(['=','p.store_id',$user->store_id]);
@@ -166,8 +185,20 @@ class menuHelper{
         $tablePrefix = Yii::$app->getDb()->tablePrefix;
         if(Yii::$app->user->identity->store_id>0){
             $where['store_id'] = Yii::$app->user->identity->store_id;
-            $data = $query->select('warehouse_name as name,purchase_totle as p_totle,stocks_totle as t_totle')
+            $data = $query->select('warehouse_id,warehouse_name as name,purchase_totle as p_totle,stocks_totle as t_totle')
                 ->from($tablePrefix.'stock_purchase')->where($where)->orderBy(['name'=>SORT_ASC])->all();
+            return $data;
+        }
+
+    }
+
+    public static function getRefuse(){
+        $query = new Query();
+        $tablePrefix = Yii::$app->getDb()->tablePrefix;
+        if(Yii::$app->user->identity->store_id>0){
+            $where['store_id'] = Yii::$app->user->identity->store_id;
+            $data = $query->select('warehouse_id,warehouse_name as name,nums')
+                ->from($tablePrefix.'refuse_totle')->where($where)->orderBy(['name'=>SORT_ASC])->all();
             return $data;
         }
 
@@ -180,12 +211,53 @@ class menuHelper{
             $where['s.store_id'] = Yii::$app->user->identity->store_id;
             $data = $query->select('s.warehouse_name as name,s.stocks_totle as t_totle,o.sale_nums as totle')
                 ->from($tablePrefix.'stock_purchase as s')
-                ->leftJoin(['o'=>$tablePrefix.'sale'],'o.warehouse_id=s.warehouse_id')
+                ->innerJoin(['o'=>$tablePrefix.'sale'],'o.warehouse_id=s.warehouse_id')
                 ->where($where)->orderBy(['name'=>SORT_ASC])->all();
             return $data;
         }
 
     }
+
+    public static function warningInfo($goods_id,$warehouse_id){
+        $warn = Warning::findOne(['goods_id'=>$goods_id,'warehouse_id'=>$warehouse_id,'is_warning'=>1]);
+        if($warn){
+            $totle=StocksModel::find()->where(['goods_id'=>$goods_id,'warehouse_id'=>$warehouse_id])->sum('stock_num');
+                if($totle<=$warn->warning_num){
+                    $udata = User::find()->select('mobile')->asArray()->where(['user_id'=>$warn->princial_id])->one();
+                    $model = new WarningInfo();
+                    $model->info=$info="库存不足：".$warn->goods_name."　".$warn->spec."（".$warn->warehouse_name."中库存数量：".$totle."件） ！ ";
+                    $model->goods_name = $warn->goods_name;
+                    $model->goods_id = $warn->goods_id;
+                    $model->warehouse_id = $warn->warehouse_id;
+                    $model->store_id = Yii::$app->user->identity->store_id;
+                    $model->store_name = Yii::$app->user->identity->store_name;
+                    $model->warning_num = $warn->warning_num;
+                    $model->warning_time = time();
+                    $model->close_type =0;
+                    $obj = new HuyiSms();
+                    $status = $obj->send($udata['mobile'],$info);
+                    if($status['code']==2)
+                        $model->is_send=1;
+                    else
+                        $model->is_send=0;
+                    $model->save();
+                }
+        }
+        return true;
+    }
+
+    public static function warnStatus($goods_id,$warehouse_id){
+         if($model = WarningInfo::find()->where(['goods_id'=>$goods_id,'warehouse_id'=>$warehouse_id,'close_type'=>0])->orderBy('id desc')->one()){
+               $totle=StocksModel::find()->where(['goods_id'=>$goods_id,'warehouse_id'=>$warehouse_id])->sum('stock_num');
+               if($totle>$model->warning_num)
+                 WarningInfo::updateAll(['close_type'=>1,'close_time'=>time()],'goods_id=:id and warehouse_id=:wid and close_type=:type',[':id'=>$goods_id,':wid'=>$warehouse_id,':type'=>0]);
+               else
+                 self::warningInfo($goods_id,$warehouse_id);
+         }
+    }
+
+
+
 
 
 

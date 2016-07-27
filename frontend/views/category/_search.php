@@ -15,7 +15,7 @@ use yii\widgets\ActiveForm;
         'method' => 'get',
     ]); ?>
 
-    <input type="text" name="name">
+    <div class="close_btn"><input type="text" name="name"><img src="statics/img/close_icon.jpg" class="img_css"></div>
 
     <div class="form-group">
         <?= Html::submitButton(Yii::t('app', '<i class="iconfont">&#xe60d;</i>搜索')) ?>

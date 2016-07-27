@@ -15,7 +15,7 @@ use yii\widgets\ActiveForm;
         'method' => 'get',
     ]); ?>
 
-    <input type="text" name="name" placeholder ="请输入物流公司名称">
+    <div class="close_btn"><input type="text" name="name" placeholder ="请输入物流公司名称"><img src="statics/img/close_icon.jpg" class="img_css"></div>
 
     <div class="form-group">
         <?= Html::submitButton('<i class="iconfont">&#xe60d;</i>搜索') ?>

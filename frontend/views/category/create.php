@@ -12,21 +12,21 @@ $this->params['breadcrumbs'][] = $this->title;
 AppAsset::register($this);
 $this->registerCssFile('@web/statics/svg/iconfont.css',['depends'=>['yii\web\YiiAsset']]);
 $this->registerCssFile('@web/statics/css/purchaseOrders-new.css',['depends'=>['yii\web\YiiAsset']]);
-$this->registerJsFile('@web/statics/js/js_global/jquery-1.10.1.min.js',['depends'=>['yii\web\YiiAsset']]);
 $this->registerJsFile('@web/statics/js/js_global/global.js',['depends'=>['yii\web\YiiAsset']]);
 ?>
 
 <!--内容-->
 <div class="container">
-    <?php $form=ActiveForm::begin(['action'=>['category/create'],
-        'method'=>'post',
-        'enableAjaxValidation' => true,
-        'enableClientValidation' => true
-    ])?>
+    <?php $form = ActiveForm::begin([
+        'id' => 'form-category',
+        //'enableAjaxValidation' => true,
+        //'enableClientValidation' => true,
+    ]); ?>
 	<h4 class="orders-newtade">商品分类信息</h4>
     <div class="orders-new clearfix">
         <p>分类名称:</p>
         <?php echo $form->field($model,'name')->textInput(['autofocus'=>false])->label(false)->hint("<label>*请输入商品分类名称</label>");?>
+        <span id="c_name" style="color: red; margin: 0; font-weight: bold;"></span>
     </div>
     <div class="orders-new clearfix">
         <p>状态:</p>
@@ -47,15 +47,43 @@ $this->registerJsFile('@web/statics/js/js_global/global.js',['depends'=>['yii\we
     <?=Html::activeInput('hidden',$model,'store_id',['value'=>yii::$app->user->identity->store_id])?>
     <?=Html::activeInput('hidden',$model,'store_name',['value'=>yii::$app->user->identity->store_name])?>
     <?=Html::activeInput('hidden',$model,'add_user_id',['value'=>yii::$app->user->identity->id])?>
-    <?=Html::activeInput('hidden',$model,'add_user_name',['value'=>yii::$app->user->identity->username])?>
+    <?=Html::activeInput('hidden',$model,'add_user_name',['value'=>yii::$app->user->identity->real_name])?>
     <?=Html::activeInput('hidden',$model,'create_time',['value'=>time()])?>
     <div class="orders-newbut">
         <?= Html::submitButton('保存', ['class' => 'boxlf-but', 'name' => 'login-button']) ?>
         <a href="<?=Url::to(['category/index'])?>">
-            <button class="orders-newbut2" type="button">返回</button>
+            <span class="orders-newbut2">返回</span>
         </a>
     </div>
     <?php ActiveForm::end()?>
 </div>
+<?php \frontend\components\JsBlock::begin()?>
+<script>
+    $(function(){
+        //验证同父级下是否有相同的分类名称
+        $("input[name='Category[name]']").blur(function(){
+            var name = $("input[name='Category[name]']").val();
+            var parent_id = <?=$parent_id?>;
+            if(name!=''){
+                $.post("<?=Url::to(['category/index'])?>",{action:'e_cname',name:name,parent_id:parent_id},function(result){
+                    if(result==0){
+                        $("#c_name").text('');
+                        $('.boxlf-but').attr('disabled',false);
+                        return true;
+                    }else{
+                        $("#c_name").text('分类名称已存在');
+                        $('.boxlf-but').attr('disabled',true);
+                        return false;
+                    }
+                },'json');
+            }
+
+        });
+    });
+
+</script>
+<?php \frontend\components\JsBlock::end()?>
+
+
 
 

@@ -1,0 +1,159 @@
+.new_panel{
+	width: 900px;
+	background: #fff;
+	display: none;
+}
+
+.new_panel h2{
+	padding: 8px 0 8px 10px;
+	margin: 0;
+	font-size: 16px;
+	background: #fff;
+}
+
+.icon_close{
+	padding-right: 15px;
+	font-size: 24px;
+	line-height: 24px;
+	float: right;
+	cursor: pointer;
+}
+
+.new_panel_title{
+	width: 100%;
+	height: 30px;
+	line-height: 30px;
+	text-align: center;
+	font-weight: bold;
+	background: #f2f2f2;
+	margin: 2px 0;
+	clear: both;
+}
+
+.infor_box{
+	margin-bottom: 1px;
+}
+
+.infor_box select{
+	width: 502px;
+	height: 30px;
+	border: none;
+	border: 1px solid #ccc;
+}
+
+.infor_box span{
+	width: 150px;
+	height: 30px;
+	line-height: 30px;
+	text-align: right;
+	display: inline-block;
+	background: #f2f2f2;
+}
+
+.infor_box input{
+	width: 500px;
+	height: 28px;
+	border: none;
+	border: 1px solid #CCCCCC;
+}
+
+.infor_box span.infor_checkbox{
+	width: auto;
+	height: auto;
+	margin-left: 20px;
+	background: none;
+}
+
+.infor_checkbox span:first-child{
+	width: 150px;
+	height: 30px;
+	line-height: 30px;
+	margin: 0 5px 2px 0;
+	text-align: right;
+	display: inline-block;
+	background: #f2f2f2;
+}
+
+.infor_checkbox input{
+	width: auto;
+	margin-right: 5px;
+	vertical-align: middle;
+}
+
+.remark_box{
+	height: 110px;
+}
+
+.remark_box span{
+	width: 150px;
+	height: 110px;
+	line-height: 110px;
+	text-align: right;
+	display: inline-block;
+	background: #f2f2f2;
+	float: left;
+	margin-right: 4px;
+}
+
+.remark_box textarea{
+	width: 490px;
+	height: 98px;
+	float: left;
+	padding: 5px;
+	resize: none;
+	border: none;
+	border: 1px solid #ccc;
+}
+
+.bottom_box{
+	margin-bottom: 5px;
+}
+
+.bottom_left{
+	width: 150px;
+	height: 200px;
+	line-height: 200px;
+	text-align: right;
+	margin-right: 5px;
+	display: block;
+	float: left;
+	background: #f2f2f2;
+}
+
+.bottom_right{
+	display: block;
+	float: left;
+}
+
+.bottom_right input{
+	width: 500px;
+	height: 26px;
+	margin: 2px 0;
+	border: none;
+	border: 1px solid #ccc;
+}
+
+.bottom_right .infor_checkbox input{
+	width: auto;
+	margin-right: 5px;
+	vertical-align: middle;
+	border: none;
+}
+
+.button{
+	clear: both; 
+	background: #f2f2f2;
+	text-align: right; 
+	padding: 15px 0;
+}
+
+.button button{
+	width: 120px;
+	height: 30px;
+	background: #ffffff;
+	margin-right: 30px;
+	border: 1px solid #aaa;
+	border-radius: 5px;
+	cursor: pointer;
+	
+}

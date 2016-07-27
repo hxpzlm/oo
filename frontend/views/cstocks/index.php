@@ -43,19 +43,19 @@ $supplier = \frontend\components\Search::SearchSupplier();
 		</tr>
 		<?php foreach($dataProvider as $item){?>
 		<tr>
-			<td><?=$item['warehouse_name']?></td>
-			<td class="table-tdw"><?=$item['goods_name']?> <?=$item['spec']?></td>
-			<td><?=$item['brand_name']?></td>
-			<td><?=$item['buy_price']?></td>
-			<td><?=$item['number']?></td>
-			<td><?=$item['totle_price']?></td>
-			<td><?=($item['buy_time']>0)?date('Y-m-d',$item['buy_time']):"";?></td>
-			<td><?=$item['supplier_name']?></td>
-			<td class="proware-va1"><?=($item['purchases_status']==1)?"是":"否";?></td>
-			<td class="proware-va2"><?=($item['purchases_time']>0)?date('Y-m-d',$item['purchases_time']):"";?></td>
+			<td width="7%" class="table-left">&nbsp;<?=$item['warehouse_name']?></td>
+			<td class="table-left"><?=$item['goods_name']?> <?=$item['spec']?></td>
+			<td width="12%"><?=$item['brand_name']?></td>
+			<td width="7%" class="table-right"><?=$item['buy_price']?>元</td>
+			<td width="7%"><?=$item['number'].$item['unit_name']?></td>
+			<td width="7%" class="table-right"><?=$item['totle_price']?>元</td>
+			<td width="8%"><?=($item['buy_time']>0)?date('Y-m-d',$item['buy_time']):"";?></td>
+			<td width="12%" class="table-left"><?=$item['supplier_name']?></td>
+			<td width="5%"><?=($item['purchases_status']==1)?"是":"否";?></td>
+			<td width="5%"><?=($item['purchases_time']>0)?date('Y-m-d',$item['purchases_time']):"";?></td>
 			<?php if(Yii::$app->authManager->checkAccess(Yii::$app->user->id,'cstocks/handle')) {?>
-			<td>
-				<div class="sellDe-del"><i class="iconfont sellDe-deli icon-queren"  title="<?=($item['purchases_status']==1)?"取消确认入库":"确认入库";?>"></i>
+			<td width="5%">
+				<div class="sellDe-del"><i class="iconfont sellDe-deli icon-<?if($item['purchases_status']==1){?>quxiao<?php }else{ ?>queren<?php } ?>"  title="<?=($item['purchases_status']==1)?"取消确认入库":"确认入库";?>"></i>
 					<div class="sellDe-delbox">
 						<p class="delboxt1"><i class="iconfont">&#xe608;</i></p>
 						<?php if($item['purchases_status']==1){?>
@@ -73,7 +73,7 @@ $supplier = \frontend\components\Search::SearchSupplier();
 						<?php }?>
 					</div>
 				</div>
-				<?php if(Yii::$app->authManager->checkAccess(Yii::$app->user->id,'cstocks/view')){?>
+				<?php if(Yii::$app->authManager->checkAccess(Yii::$app->user->id,'purchase/view')){?>
 				<a href="<?=Url::to(['purchase/view','id'=>$item['purchase_id']])?>" data-method="post"><i class="iconfont">&#xe60b;</i></a>
 				<?php }?>
 			</td>
@@ -97,6 +97,13 @@ $supplier = \frontend\components\Search::SearchSupplier();
 				{title:"<?=$v['name']?>"},
 				<?php }?>
 			],
+            callback:function(data){
+                $(".close_btn img").show();
+                $(".close_btn img").click(function(){
+                    $("input[name='goods_name']").val('');
+                    $(this).hide();
+                })
+            }
 		});
 		//品牌数据过滤
 

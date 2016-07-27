@@ -2,6 +2,7 @@
 
 namespace frontend\controllers;
 
+use frontend\components\menuHelper;
 use Yii;
 use frontend\models\Moving;
 use frontend\models\MovingSearch;
@@ -64,15 +65,17 @@ class MovingController extends CommonController
 
         //搜索条件
         $update_time_start = strtotime(Yii::$app->request->get('update_time_start')); //调剂开始时间
-        $update_time_end = strtotime(Yii::$app->request->get('update_time_end')); //调剂结束时间
+        $update_time_end = strtotime(Yii::$app->request->get('update_time_end').' 23:59:59'); //调剂结束时间
         $where='';
         $store_id = Yii::$app->user->identity->store_id;
         if($store_id>0){
             $where['store_id'] = $store_id;
+        }else{
+            $sid = Yii::$app->request->get('store_id');
+            if(!empty($sid)){
+                $where['store_id'] = $sid;
+            }
         }
-        //if (!empty($s_con['goods_id'])) $where['goods_id']= $s_con['goods_id']; //商品id
-        //if (!empty($s_con['brand_id'])) $where['brand_id'] = $s_con['brand_id'];//品牌id
-
         if (!empty($s_con['from_warehouse_id'])) $where['from_warehouse_id'] = $s_con['from_warehouse_id'];//来源仓库
         if (!empty($s_con['to_warehouse_id'])) $where['to_warehouse_id'] = $s_con['to_warehouse_id']; //目标仓库
 
@@ -87,7 +90,7 @@ class MovingController extends CommonController
             if(!empty($update_time_end))  $query->andWhere(['<=','update_time',$update_time_end]);
         }
         $countQuery = clone $moving;
-        $pages = new Pagination(['totalCount' => $countQuery->count(),'defaultPageSize'=>15]);
+        $pages = new Pagination(['totalCount' => $countQuery->count(),'defaultPageSize'=>20]);
         $dataProvider = $moving->offset($pages->offset)
             ->limit($pages->limit)
             ->all();
@@ -96,7 +99,7 @@ class MovingController extends CommonController
         if(Yii::$app->request->get('action')=='export'){
             $final = [['仓库','商品中英文名称（含规格）','品牌', '条形码','调剂数量','调剂日期','入库状态','入库日期']];
 
-            foreach ($dataProvider as $row) {
+            foreach ($countQuery->all() as $row) {
                 $final[] = [
                     $row['from_warehouse_name'].'->'.$row['to_warehouse_name'],$row['goods_name'].' '.$row['spec'],$row['brand_name'],$row['barode_code']."\t",$row['number'],date('Y-m-d H:i:s',$row['update_time']),$row['status']==1?'入库':'未入库',date('Y-m-d H:i:s',$row['confirm_time']),
                 ];
@@ -108,30 +111,71 @@ class MovingController extends CommonController
                 return $this->redirect('/'.$outFile);
             }
         }
+
+        //ajax获取原仓库下面的商品信息
+        if(Yii::$app->request->get('action')=='f_goods'){
+            $wh = '';
+            $store_id = Yii::$app->user->identity->store_id;
+            if($store_id>0){
+                $wh['store_id'] = $store_id;
+            }
+            $from_warehouse_id = Yii::$app->request->get('from_warehouse_id');
+            if(!empty($from_warehouse_id)){
+                $wh['warehouse_id'] = $from_warehouse_id;
+                $stocks_data = (new \yii\db\Query())->from($tablePrefix.'stocks')
+                    ->select('*')
+                    ->where($wh);
+                $stocks_data->andWhere(['>','stock_num',0]);
+                $stocks_data->andWhere(['!=','batch_num','']);
+                $stocks_list = $stocks_data->orderBy(['purchase_time'=>SORT_DESC])->groupBy(['goods_id'])->all();
+                foreach($stocks_list as $v){
+
+                    $data[]= array('title'=>$v['goods_name'],'result'=>array('brand_id'=>$v['brand_id'],'brand_name'=>$v['brand_name'],'spec'=>$v['spec'],'unit_id'=>$v['unit_id'],'unit_name'=>$v['unit_name'],'barode_code'=>$v['barode_code'],'goods_id'=>$v['goods_id']));
+                }
+                die(json_encode(array('data'=>$data)));
+            }
+        }
         //ajax获取所属商品下面的批次号
         if(Yii::$app->request->get('action')=='f_batch'){
             $wh = '';
             $store_id = Yii::$app->user->identity->store_id;
             if($store_id>0){
-                $wh['p.store_id'] = $store_id;
+                $wh['store_id'] = $store_id;
             }
             $from_warehouse_id = Yii::$app->request->get('from_warehouse_id');
             if(!empty($from_warehouse_id)){
-                $wh['p.warehouse_id'] = $from_warehouse_id;
+                $wh['warehouse_id'] = $from_warehouse_id;
             }
             $goods_id = Yii::$app->request->get('goods_id');
             if(!empty($goods_id)){
-                $wh['pg.goods_id'] = $goods_id;
+                $wh['goods_id'] = $goods_id;
             }
+            $batch_num = (new \yii\db\Query())->from($tablePrefix.'stocks')
+                ->select('*')
+                ->where($wh)->orderBy(['purchase_time'=>SORT_DESC])->all();
 
-            $batch_num = (new \yii\db\Query())->from($tablePrefix.'purchase as p')
-                ->select('p.batch_num')
-                ->leftJoin(['pg' => $tablePrefix.'purchase_goods'],'p.purchase_id = pg.purchase_id')
-                ->where($wh)->orderBy(['p.purchase_id'=>SORT_DESC])->all();
-            foreach($batch_num as $k=>$v){
-                $data[]= array('title'=>$v['batch_num']);
+            foreach($batch_num as $v){
+                if($v['batch_num']!='' && $v['stock_num']>0){
+                    $data[]= array('title'=>$v['batch_num'].'(库存'.$v['stock_num'].$v['unit_name'].')','result'=>array('batch_num'=>$v['batch_num'],'stock_num'=>$v['stock_num']));
+                }
             }
             die(json_encode(array('data'=>$data)));
+        }
+
+        //ajax判断商品中英文名称是否存在
+        if(Yii::$app->request->post('action')=='gname'){
+            $goods_name = Yii::$app->request->post('goods_name');
+            $gw = '';
+            $store_id = Yii::$app->user->identity->store_id;
+            if($store_id>0){
+                $gw['store_id'] = $store_id;
+            }
+            if(!empty($goods_name)){
+                $gw['name'] = $goods_name;
+            }
+            $goods_info = (new \yii\db\Query())->from($tablePrefix.'goods')->where($gw)->one();
+
+            die(json_encode($goods_info));
         }
 
         return $this->render('index', [
@@ -164,6 +208,30 @@ class MovingController extends CommonController
 
         if ($model->load(Yii::$app->request->post())) {
             $moving = Yii::$app->request->post('Moving');
+
+            //验证仓库是否存在商品
+            if(!empty($moving['from_warehouse_id'])){
+                $wh = '';
+                $store_id = Yii::$app->user->identity->store_id;
+                if($store_id>0){
+                    $wh['store_id'] = $store_id;
+                }
+                $wh['warehouse_id'] = $moving['from_warehouse_id'];
+                $wh['goods_id'] = $moving['goods_id'];
+
+                $stocks_data = (new \yii\db\Query())->from(Yii::$app->getDb()->tablePrefix.'stocks')
+                    ->select('*')
+                    ->where($wh)->orderBy(['purchase_time'=>SORT_DESC]);
+                (new \yii\db\Query())->andWhere(['>','stock_num',0]);
+                (new \yii\db\Query())->andWhere(['!=','batch_num','']);
+                $stocks_count = $stocks_data->count();
+                if(empty($stocks_count)){
+                    echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />';
+                    echo "<script>alert('所选调出仓库下不存在此商品');location.href='';</script>";
+                    exit;
+                }
+            }
+
             $model->update_time = strtotime($moving['update_time']);
             if($model->save()){
                 return $this->redirect(['view', 'id' => $model->moving_id]);
@@ -186,8 +254,31 @@ class MovingController extends CommonController
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post())) {
-
             $moving = Yii::$app->request->post('Moving');
+
+            //验证仓库是否存在商品
+            if(!empty($moving['from_warehouse_id'])){
+                $wh = '';
+                $store_id = Yii::$app->user->identity->store_id;
+                if($store_id>0){
+                    $wh['store_id'] = $store_id;
+                }
+                $wh['warehouse_id'] = $moving['from_warehouse_id'];
+                $wh['goods_id'] = $moving['goods_id'];
+
+                $stocks_data = (new \yii\db\Query())->from(Yii::$app->getDb()->tablePrefix.'stocks')
+                    ->select('*')
+                    ->where($wh)->orderBy(['purchase_time'=>SORT_DESC]);
+                (new \yii\db\Query())->andWhere(['>','stock_num',0]);
+                (new \yii\db\Query())->andWhere(['!=','batch_num','']);
+                $stocks_count = $stocks_data->count();
+                if(empty($stocks_count)){
+                    echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />';
+                    echo "<script>alert('所选调出仓库下不存在此商品');location.href='';</script>";
+                    exit;
+                }
+            }
+
             $model->update_time = strtotime($moving['update_time']);
             if($model->save()){
                 return $this->redirect(['view', 'id' => $model->moving_id]);
@@ -274,6 +365,7 @@ class MovingController extends CommonController
                 if(!$model->save()){
                     throw new \Exception("确认调剂入库失败");
                 }
+                menuHelper::warnStatus($model['goods_id'],$model['to_warehouse_id']);
                 $bt->commit();
             }catch(Exception $e){
                 $bt->rollBack();
@@ -319,6 +411,7 @@ class MovingController extends CommonController
                 if(!$model->save()){
                     throw new \Exception("取消调剂入库失败");
                 }
+                menuHelper::warnStatus($model['goods_id'],$model['to_warehouse_id']);
                 $bt->commit();
             }catch(Exception $e){
                 $bt->rollBack();

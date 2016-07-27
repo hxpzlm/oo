@@ -26,11 +26,11 @@ $this->params['breadcrumbs'][] = $this->title;
             </p>
             <p>
                 <label>验证码：</label>
-                <input type="text"  name="phoneVerificationCode" placeholder="六位数">
+                <input type="text"  name="phoneVerificationCode" placeholder="六位数" id="code">
             </p>
             <p class="">
                 <?= Html::submitButton('下一步', ['class' => 'modifyPassword_next', 'name' => 'login-button']) ?>
-                <a href="<?=Url::to(['reset/index'])?>" href="modifyPassword00.html">上一步</a>
+                <a href="<?=Url::to(['reset/index'])?>" >上一步</a>
             </p>
         <?=Html::endForm();?>
     </div>
@@ -41,6 +41,15 @@ $this->params['breadcrumbs'][] = $this->title;
         $("#second").click(function (){
             sendCode($("#second"));
         });
+		$('.modifyPassword_next').click(function(){
+			if($('#code').val()==''){
+				alert("验证码不能为空");
+				$(this).attr('disabled','disabled');
+			}else{
+				$(this).removeAttr('disabled');
+			}
+		});
+		
     })
     //发送验证码
     function sendCode(obj){

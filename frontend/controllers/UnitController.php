@@ -41,14 +41,13 @@ class UnitController extends CommonController
         $where = array();
         $query = new \yii\db\Query;
         $tablePrefix = Yii::$app->getDb()->tablePrefix;
-        $query->select('unit_id,sort,unit,remark')->from($tablePrefix.'unit')->where($where)->orderBy(['sort'=>SORT_ASC]);
+        $query->select('unit_id,sort,unit,remark')->from($tablePrefix.'unit')->where($where)->orderBy(['sort'=>SORT_ASC,'unit_id'=>SORT_DESC]);
         if(!empty($s_con['unit'])) $query->andFilterWhere(['like','unit',$s_con['unit']]);
         $pagination = new Pagination([
-            'defaultPageSize' => 15,
+            'defaultPageSize' => 20,
             'totalCount' => $query->count(),
         ]);
-        $countries = $query->orderBy(['sort'=>SORT_ASC])
-            ->offset($pagination->offset)
+        $countries = $query->offset($pagination->offset)
             ->limit($pagination->limit)
             ->all();
 

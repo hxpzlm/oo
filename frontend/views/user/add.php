@@ -89,8 +89,8 @@ $store = \frontend\models\Store::findAll($wh);
                 <tr><td>首页</td></tr>
                 <tr style="height: 54px; line-height: 54px"><td>采购</td></tr>
                 <tr style="height: 108px; line-height: 108px"><td>销售</td></tr>
-                <tr style="height: 162px; line-height: 162px"><td>库存</td></tr>
-				 <tr><td>统计</td></tr>
+                <tr style="height: 216px; line-height: 216px"><td>库存</td></tr>
+				 <tr style="height: 135px; line-height: 135px"><td>统计</td></tr>
                 <tr style="height: 108px; line-height: 108px"><td>商品</td></tr>
                 <tr style="height: 54px; line-height: 54px"><td>系统设置</td></tr>
                 </tbody>
@@ -130,7 +130,7 @@ $store = \frontend\models\Store::findAll($wh);
                         <?}else{?>
                             <?php if($v['name']=='cstocks/handle' || $v['name']=='refuse/handle' || $v['name']=='sale/handle'){?>
                                <td></td><td></td><td></td><td><input type="checkbox" name="child[]"  value="<?=$v['name']?>"></td>
-                            <?php }else{?>
+							<?php }else{?>
                             <td><input type="checkbox" name="child[]"  value="<?=$v['name']?>"></td>
                             <?php } ?>
                         <?php }?>
@@ -148,7 +148,7 @@ $store = \frontend\models\Store::findAll($wh);
     <div class="orders-newbut">
         <?=Html::submitButton("保存")?>
         <a href="<?=\yii\helpers\Url::to(['user/index'])?>">
-            <button class="orders-newbut2" type="button">返回</button>
+            <span class="orders-newbut2">返回</span>
         </a>
     </div>
     <?php ActiveForm::end(); ?>

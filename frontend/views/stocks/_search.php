@@ -18,7 +18,7 @@ $warehose = $query->select('warehouse_id,name')->from('s2_warehouse')->where('st
         'method' => 'get',
     ]); ?>
     <div class="seeks clearfix">
-        <input type="text" id="goods_name"  name="goods_name" placeholder="请输入商品中英文名称" value="<?=Yii::$app->request->get('goods_name')?>" autocomplete="off"/>
+        <div class="close_btn"><input type="text" id="goods_name"  name="goods_name" placeholder="请输入商品中英文名称" value="<?=Yii::$app->request->get('goods_name')?>" autocomplete="off"/><img src="statics/img/close_icon.jpg" class="img_css"></div>
 
         <input type="hidden" name="store_id" value="<?=Yii::$app->user->identity->store_id?>">
         <?= Html::submitButton('<i class="iconfont">&#xe60d;</i>搜索') ?>
@@ -27,14 +27,6 @@ $warehose = $query->select('warehouse_id,name')->from('s2_warehouse')->where('st
     </div>
     <div class="seeks-box clearfix">
         <div class="seeks-boxs clearfix">
-            <p>品牌名称</p>
-            <input type="text" name="brand_name"placeholder="请输入品牌名" <?=Yii::$app->request->get('brand_name')?> autocomplete="off"/>
-        </div>
-        <div class="seeks-boxs clearfix">
-            <p>条形码</p>
-            <input type="text" name="barode_code" placeholder="请输入商品条形码" value="<?=Yii::$app->request->get('barode_code')?>"/>
-        </div>
-        <div class="seeks-boxs  clearfix">
             <p>仓库:</p>
             <select name="warehouse_id">
                 <option value="">请选择</option>
@@ -43,6 +35,29 @@ $warehose = $query->select('warehouse_id,name')->from('s2_warehouse')->where('st
                 <?php };?>
             </select>
         </div>
+        <div class="seeks-boxs clearfix">
+            <p>品牌名称</p>
+            <input type="text" name="brand_name"placeholder="请输入品牌名" <?=Yii::$app->request->get('brand_name')?> autocomplete="off"/>
+        </div>
+        <div class="seeks-boxs clearfix">
+            <p>条形码</p>
+            <input type="text" name="barode_code" placeholder="请输入商品条形码" value="<?=Yii::$app->request->get('barode_code')?>"/>
+        </div>
+        <?php
+        if(Yii::$app->user->identity->username=='admin'){
+            //获取入驻商家
+            $store_list = \frontend\components\Search::SearchStore();
+            ?>
+            <div class="seeks-boxs clearfix">
+                <p>入驻商家</p>
+                <select name="store_id">
+                    <option <?php if(''==Yii::$app->request->get('store_id')){echo 'selected';};?> value=''>请选择</option>
+                    <?php foreach($store_list as $value){?>
+                        <option <?php if($value['store_id']==Yii::$app->request->get('store_id')){echo 'selected';};?> value="<?=$value['store_id']?>"><?=$value['name']?></option>
+                    <?php }?>
+                </select>
+            </div>
+        <?php }?>
     </div>
     <?php ActiveForm::end(); ?>
 

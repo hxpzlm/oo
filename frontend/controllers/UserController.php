@@ -12,9 +12,9 @@ use frontend\models\SignupForm;
 use frontend\models\Store;
 use Yii;
 use common\models\User;
-use yii\base\Model;
 use yii\data\Pagination;
 use yii\helpers\Url;
+use yii\web\NotFoundHttpException;
 use yii\rbac\Item;
 
 class UserController extends CommonController
@@ -68,7 +68,7 @@ class UserController extends CommonController
                 $user->$k = $v;
             }
             $user->add_user_id= Yii::$app->user->id;
-            $user->add_user_name = Yii::$app->user->identity->username;
+            $user->add_user_name = Yii::$app->user->identity->real_name;
             $wh['status'] = 1;
             if($data['SignupForm']['store_id']>0){
                 $wh['store_id'] = $data['SignupForm']['store_id'];
@@ -80,7 +80,7 @@ class UserController extends CommonController
             $transaction=Yii::$app->db->beginTransaction();
             try {
                 if(!$user->save()){
-                    throw new \Exception("添加用户失败");
+                    throw new NotFoundHttpException("添加用户失败");
                 }
                 $user_id = Yii::$app->db->getLastInsertID();
                 $auth = Yii::$app->authManager;
@@ -88,7 +88,7 @@ class UserController extends CommonController
                     $item = new Item();
                     $item->name = "system";
                     if(!$auth->assign($item,$user_id)){
-                        throw new \Exception("用户授权失败");
+                        throw new NotFoundHttpException("用户授权失败");
                     }
                 }else{
                     $item = new Item();
@@ -96,17 +96,19 @@ class UserController extends CommonController
                     $item->type = 1;
                     $item->description = "创建了".$data['SignupForm']['username']."角色";
                     if(!$auth->add($item)){
-                        throw new \Exception("添加用户失败");
+                        throw new NotFoundHttpException("添加用户失败");
                     }
-
-                    foreach($data['child'] as $v){
-                        $sql[]= [$data['SignupForm']['username'],$v];
-                    }
-                    $db= \Yii::$app->db->createCommand();
-                    $db->batchInsert(Yii::$app->db->tablePrefix.'auth_item_child',['parent','child'],$sql)->execute();
-                    if(!$auth->assign($item,$user_id)){
-                        throw new \Exception("用户授权失败");
-                    }
+                    if($data['child']){
+						foreach($data['child'] as $v){
+							$sql[]= [$data['SignupForm']['username'],$v];
+						}
+						$db= \Yii::$app->db->createCommand();
+						$db->batchInsert(Yii::$app->db->tablePrefix.'auth_item_child',['parent','child'],$sql)->execute();
+						if(!$auth->assign($item,$user_id)){
+							throw new NotFoundHttpException("用户授权失败");
+						}
+					}
+                    
                 }
                 $transaction->commit();
             }catch(Exception $e){
@@ -121,6 +123,9 @@ class UserController extends CommonController
 
     public function actionUpdate($user_id){
         $user = User::findOne(['user_id'=>$user_id]);
+		if($user_id==Yii::$app->user->identity->user_id){
+			throw new NotFoundHttpException("您没有权限修改自己的用户账号");
+		}
         $username = $user['username'];
 		$type = $user['type'];
         $model = new SignupForm();
@@ -141,7 +146,7 @@ class UserController extends CommonController
             $transaction=Yii::$app->db->beginTransaction();
             try {
                 if(!$user->save()){
-                    throw new \Exception("用户编辑失败");
+                    throw new NotFoundHttpException("用户编辑失败");
                 }
 				if($data['child']){
                 $auth = Yii::$app->authManager;
@@ -154,29 +159,20 @@ class UserController extends CommonController
 						$auth->revoke($item,$user_id);
 						$item->name = "system";
 						if(!$auth->assign($item,$user_id)){
-                        throw new \Exception("用户授权失败");
+                        throw new NotFoundHttpException("用户授权失败");
 						}
 					}
                 }else{
 					if($data['User']['type']!=$type){
 						$item->name = "system";
 						$auth->revoke($item,$user_id);
+					}else{
+						$item->name = $username;
 					}
-                    $item->name = $data['User']['username'];
-                    $item->description = "创建了".$data['User']['username']."角色";
-                    if($data['User']['type']!=$type){
-                        $item->type = 1;
-                        if(!$auth->add($item)){
-                            throw new \Exception("用户编辑失败");
-                        }
-                    }else{
-                        if(!$auth->update($username,$item)){
-                            throw new \Exception("用户编辑失败");
-                        }
-                    }
+                    
                     Auth::deleteAll(['parent'=>$username]);
                     foreach($data['child'] as $v){
-                        $sql[]= [$data['User']['username'],$v];
+                        $sql[]= [$username,$v];
                     }
                     $db= \Yii::$app->db->createCommand();
                     $db->batchInsert(Yii::$app->db->tablePrefix.'auth_item_child',['parent','child'],$sql)->execute();
@@ -184,7 +180,7 @@ class UserController extends CommonController
                     $aa->name = $username;
                     $auth->revoke($aa,$user_id);
                     if(!$auth->assign($item,$user_id)){
-                        throw new \Exception("用户授权失败");
+                        throw new NotFoundHttpException("用户授权失败");
                     }
 				  }
                 }
@@ -217,6 +213,15 @@ class UserController extends CommonController
 
     public function actionProfile()
     {
+        if(Yii::$app->request->get('action')=='init'){
+            $id = Yii::$app->request->get('user_id');
+            $user = new User();
+            $userInfo = $user->findIdentity($id);
+            $user->setPassword("vtg123");
+            $userInfo->password_hash = $user->password_hash;
+            $userInfo->save();
+            return  $this->redirect(['index']);
+        }
         $id = Yii::$app->user->id;
 		$user = new User();
         $userInfo = $user->findIdentity($id);
@@ -244,9 +249,8 @@ class UserController extends CommonController
             if(isset($data['sex'])){
                 $userInfo->sex = $data['sex'];
             }
-			    
-                $userInfo->save();
-                return  $this->goBack();
+            $userInfo->save();
+            return  $this->goBack();
         }
         return $this->render('profile',[
             'user' => $userInfo,

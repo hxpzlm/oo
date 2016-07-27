@@ -125,7 +125,8 @@ class Search{
         }else{
             $wh='';
         }
-        $store = Store::find()->select('name')->where($wh)->all();
+        $wh['status'] = 1;
+        $store = Store::find()->select('store_id,name')->where($wh)->all();
         return $store;
     }
 

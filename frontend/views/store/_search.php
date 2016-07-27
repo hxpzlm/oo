@@ -13,7 +13,7 @@ use yii\widgets\ActiveForm;
         'method' => 'get',
     ]); ?>
 
-    <input type="text" name="name" placeholder ="请输入入驻商家名称">
+<div class="close_btn"><input type="text" name="name" placeholder ="请输入入驻商家名称"><img src="statics/img/close_icon.jpg" class="img_css"></div>
 
     <?= Html::submitButton('<i class="iconfont">&#xe60d;</i>搜索') ?>
 

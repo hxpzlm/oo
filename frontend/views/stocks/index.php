@@ -30,21 +30,21 @@ $brand = \frontend\components\Search::SearchBrand();
 		</tr>
 		<?php foreach($dataProvider as $item){?>
 		<tr>
-		    <td><?=$item['warehouse_name']?></td>
-		    <td class="table-tdw"><?=$item['goods_name']?>&nbsp;&nbsp; <?=$item['spec']?></td>
-		   	<td><?=$item['brand_name']?></td>
-		   	<td><?=$item['barode_code']?></td>
-		   	<td><?=$item['cat_name']?></td>
-		   	<td><?=$item['batch_nums']?></td>
-		   	<td><?=$item['totle']?><?=$item['unit_name']?></td>
-			<td>
+		    <td width="8%" class="table-left">&nbsp;<?=$item['warehouse_name']?></td>
+		    <td class="table-left"><?=$item['goods_name']?>&nbsp;&nbsp; <?=$item['spec']?></td>
+		   	<td width="10%"><?=$item['brand_name']?></td>
+		   	<td width="10%"><?=$item['barode_code']?></td>
+		   	<td width="7%"><?=$item['cat_name']?></td>
+		   	<td width="10%"><?=$item['batch_nums']?></td>
+		   	<td width="12%" class="table-right"><?=$item['totle']?><?=$item['unit_name']?></td>
+			<td width="5%">
 				<div class="stocksData-more"><i class="more-dian iconfont">&#xe610;</i>
 					<div class="stocksD-morebox">
 						<p class="moreboxt1"><i class="iconfont">&#xe608;</i></p>
 						<ul class="more-lsit">
 							<li class="more-lsit1 clearfix"><p>批号</p><p>采购数量</p><p>失效日期</p><p>采购日期</p><p>库存数量</p></li>
 							<?php $goods= \frontend\models\StocksModel::getGoodsStocks($item['goods_id'],$item['warehouse_id']);foreach($goods as $v){ ?>
-							<li class="clearfix"><p><?=empty($v['batch_num'])?"无":$v['batch_num'];?></p><p><?=$v['purchase_num']?><?=$item['unit_name']?></p><p><?=date('Y-m-d',strtotime($v['batch_num']))?></p><p><?=date('Y-m-d',$v['purchase_time'])?></p><p><?=$v['stock_num']?><?=$item['unit_name']?></p></li>
+							<li class="clearfix"><p><?=empty($v['batch_num'])?"无":$v['batch_num'];?></p><p><?=$v['purchase_num']?><?=$item['unit_name']?></p><p><?=empty($v['batch_num'])?"　":date('Y-m-d',strtotime(substr($v['batch_num'],0,8)))?></p><p><?=($v['purchase_time']>0)?date('Y-m-d',$v['purchase_time']):"　"?></p><p><?=$v['stock_num']?><?=$item['unit_name']?></p></li>
 							<?php }?>
 						</ul>
 					</div>
@@ -68,6 +68,13 @@ $brand = \frontend\components\Search::SearchBrand();
 			   {title:"<?=$val['name']?>"},
 			   <?php }?>
 			   ],
+           callback:function(data){
+               $(".close_btn img").show();
+               $(".close_btn img").click(function(){
+                   $("input[name='goods_name']").val('');
+                   $(this).hide();
+               })
+           }
 		   });
 		//品牌数据过滤
 

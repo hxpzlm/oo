@@ -29,8 +29,7 @@ class Unit extends \yii\db\ActiveRecord
     {
         return [
             [['unit_id'], 'required','message'=>'计量单位ID不能为空'],
-            [['unit_id', 'sort','add_user_id', 'create_time'], 'integer','message'=>'必须为数字'],
-            [['add_user_name'], 'string', 'max' => 20],
+            [['unit_id', 'sort'], 'integer','message'=>'必须为数字'],
             [['remark'], 'string','max' => 256,'message'=>'不能超过256个字符'],
             [['unit'], 'string', 'max' => 100,'message'=>'不能超过100个字符'],
             [['unit'], 'required', 'message'=>'计量单位名称不能为空'],

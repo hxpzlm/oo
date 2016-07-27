@@ -214,6 +214,16 @@
 	font-size: 16px;
 	cursor: pointer;
 }
+.orders-newbut span{
+	background: #C61239;
+	color: #fff;
+	border: none;
+	display: inline-block;
+	padding: 5px 30px;
+	border-radius: 5px;
+	font-size: 16px;
+	cursor: pointer;
+}
 .orders-newbut2{
 	background: #666666 !important;
 	margin-left: 20px;
@@ -236,9 +246,10 @@
 }
 
 .goodsReceipt_commodity .goodsReceipt_commodity_span{
-    width:8%;
-    margin: 0 2%!important;
+    width:10%;
+    margin: 0 1%!important;
 }
+
 .goodsReceipt_commodity label{
     margin-top: 10px;
 }
@@ -334,5 +345,6 @@
 }
 
 .red{
-    color: #cd0200;
+    color: #FF0000;
+    font-weight: bold;
 }

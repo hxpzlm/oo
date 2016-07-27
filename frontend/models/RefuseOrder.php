@@ -48,12 +48,14 @@ class RefuseOrder extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['refuse_id', 'order_id', 'warehouse_id', 'shop_id', 'sale_time', 'create_time', 'customer_id'], 'integer'],
+            [['refuse_id', 'order_id', 'warehouse_id', 'shop_id', 'sale_time', 'create_time', 'customer_id','order_no'], 'integer','message'=>'必须为数字'],
             [['reason', 'remark'], 'string'],
-            [['order_no', 'store_name', 'warehouse_name', 'shop_name', 'add_user_name', 'customer_name', 'confirm_user_name'], 'string', 'max' => 32],
+            [['order_no', 'store_name', 'warehouse_name', 'shop_name', 'add_user_name', 'confirm_user_name'], 'string', 'max' => 32],
             ['shop_id', 'required','message'=>'请选择销售平台'],
             ['order_no', 'required','message'=>'请选择订单编号'],
+            ['customer_name', 'string','max' => 100],
             ['refuse_amount', 'required','message'=>'退款金额不能为空'],
+            ['refuse_amount', 'number','message'=>'退款金额格式不正确'],
             ['refuse_time', 'required','message'=>'请选择退款日期'],
             ['warehouse_id', 'required','message'=>'请选择仓库'],
         ];

@@ -60,8 +60,8 @@ class Goods extends \yii\db\ActiveRecord
             [['unit_name'], 'string', 'max' => 50],
             [['virtue', 'painter', 'suggest', 'element'], 'string', 'max' => 255],
             [['store_mode'], 'string', 'max' => 100],
-            [['name'],'unique','message' => '商品名称已存在'],
-            [['name','spec','brand_id','unit_name','barode_code','weight','volume','shelf_life','cat_id','sort','principal_id'], 'required', 'message' => '不能为空'],
+            [['name'],'unique','filter'=>['store_id'=>Yii::$app->user->identity->store_id],'message' => '商品名称已存在'],
+            [['name','spec','brand_name','unit_id','barode_code','cat_id','sort','principal_id'], 'required', 'message' => '不能为空'],
         ];
     }
 

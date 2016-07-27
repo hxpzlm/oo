@@ -23,35 +23,27 @@ $(document).ready(function(){
 		}
 	}
 	//更多搜索
-	// $('.seeks-xl').click(function(){
-	// 	if($('.seeks-xl label').text()=='▼'){
-	// 		$('.seeks-xl label').text('▲');
-	// 		$('.seeks-box').append("<input type='hidden' name='ison' value='1'>");
-	// 	}else{
-	// 		$('.seeks-xl label').text('▼');
-	// 		$('input[name="ison"]').attr("value","0");
-	// 	}
-	// 	$('.seeks-box').stop().toggle('slow');
-	// })
-	$('.seeks-box').hide();
-	if($.cookie('state')=="show"){
-		$('.seeks-box').show();
-		$('.seeks-xl label').text('▲');
-	}else{
-		$('.seeks-box').hide();
-		$('.seeks-xl label').text('▼');
-	}
-
 	$('.seeks-xl').click(function(){
-		if($.cookie('state')=="show"){
-			$.cookie('state','hide');
-			$('.seeks-box').hide();
-			$('.seeks-xl label').text('▼');
-		}else{
-			$.cookie('state','show');
-			$('.seeks-box').show();
+		if($('.seeks-xl label').text()=='▼'){
 			$('.seeks-xl label').text('▲');
+		}else{
+			$('.seeks-xl label').text('▼');
 		}
-	});
-
+		$('.seeks-box').stop().toggle('slow');
+	})
 })
+
+
+//2016/7/6新增
+
+	//弹窗方法
+	function showWindow(obj){
+		$('.iDiv').show();
+		$(obj).show();
+	}
+	
+	//关闭弹窗方法
+	function closeWindow(obj){
+		$('.iDiv').hide();
+		$(obj).hide();
+	}

@@ -39,15 +39,15 @@ $brand_list = \frontend\components\Search::SearchBrand();
             </tr>
             <?php foreach($dataProvider as $item){ ?>
                 <tr>
-                    <td><?=$item['from_warehouse_name'].' -> '.$item['to_warehouse_name']?></td>
-                    <td class="table-tdw"><?=BaseStringHelper::truncate($item['goods_name'],32).' '.$item['spec'];?> </td>
-                    <td><?=$item['brand_name'];?></td>
-                    <td><?=$item['barode_code']?></td>
-                    <td><?=$item['number'];?></td>
-                    <td><?=$item['update_time']>0?date('Y-m-d',$item['update_time']):'';?></td>
-                    <td><?=$item['status']==1?'入库':'未入库';?></td>
-                    <td><?=$item['confirm_time']>0?date('Y-m-d',$item['confirm_time']):'';?></td>
-                    <td>
+                    <td class="table-left" width="12%">&nbsp;<?=$item['from_warehouse_name'].' -> '.$item['to_warehouse_name']?></td>
+                    <td class="table-left"><?=BaseStringHelper::truncate($item['goods_name'],32).' '.$item['spec'];?> </td>
+                    <td width="6%"><?=$item['brand_name'];?></td>
+                    <td width="6%"><?=$item['barode_code']?></td>
+                    <td width="5%"><?=$item['number'];?></td>
+                    <td width="7%"><?=$item['update_time']>0?date('Y-m-d',$item['update_time']):'';?></td>
+                    <td width="5%"><?=$item['status']==1?'入库':'未入库';?></td>
+                    <td width="10%"><?=$item['confirm_time']>0?date('Y-m-d',$item['confirm_time']):'';?></td>
+                    <td width="7%">
                         <?php if(Yii::$app->authManager->checkAccess(Yii::$app->user->identity->id,'moving/handle')){?>
                         <?php if($item['status']==0){?>
                                 <?= Html::a('<i class="iconfont sellDe-deli icon-queren"></i>', ['handle', 'id' => $item['moving_id'],'action'=>'comfirm'], [
@@ -70,13 +70,7 @@ $brand_list = \frontend\components\Search::SearchBrand();
                         <?php }?>
                         <?php if($item['status']==0){?>
                         <?php if(Yii::$app->authManager->checkAccess(Yii::$app->user->identity->id,'moving/delete')){?>
-                            <?= Html::a('<i class="iconfont">&#xe605;</i>', ['delete', 'id' => $item['moving_id']], [
-                                'class' => 'orders-infosc',
-                                'data' => [
-                                    'confirm' => '您确定要删除这条记录吗？删除后不可恢复！',
-                                    'method' => 'post',
-                                ],
-                            ]) ?>
+                                <a class="orders-infosc" href="javascript:;" nctype="<?=$item['moving_id']?>"><i class="iconfont">&#xe605;</i></a>
                         <?php }?>
                         <?php if(Yii::$app->authManager->checkAccess(Yii::$app->user->identity->id,'moving/update')){?>
                             <a href="<?=Url::to(['moving/update','id' => $item['moving_id']])?>"><i class="iconfont">&#xe603;</i></a>
@@ -94,6 +88,14 @@ $brand_list = \frontend\components\Search::SearchBrand();
             'pagination' => $pages,
         ]);?>
     </div>
+    <div class="orders-sc">
+        <p class="orders-sct1 clearfix">删除<i class="iconfont">&#xe608;</i></p>
+        <p class="orders-sct2">您确定要删除这条记录吗？删除后不可恢复！</p>
+        <div class="orders-sct3">
+            <a href="" data-method="post"><span class="orders-sct3qx" style="cursor: pointer">确定</span></a>
+            <span style="cursor: pointer">取消</span>
+        </div>
+    </div>
 <?php \frontend\components\JsBlock::begin()?>
     <script>
         $(function(){
@@ -107,6 +109,11 @@ $brand_list = \frontend\components\Search::SearchBrand();
                 ],
                 callback:function(data){
                     $("input[name='goods_id']").val(data.result.goods_id);
+                    $(".close_btn img").show();
+                    $(".close_btn img").click(function(){
+                        $("input[name='goods_name']").val('');
+                        $(this).hide();
+                    })
                 }
             });
 
@@ -121,7 +128,16 @@ $brand_list = \frontend\components\Search::SearchBrand();
                     $("input[name='brand_id']").val(data.result.brand_id);
                 }
             });
-
+            //删除
+            var sc;
+            $('.orders-infosc').click(function(){
+                var id = $(this).attr('nctype');
+                $('.orders-sct3>a').attr('href','<?=Url::to(['moving/delete'])?>&id='+id);
+                sc = $(".orders-sc").bPopup();
+            })
+            $(".orders-sct1 i,.orders-sct3 span").click(function(){
+                sc.close();
+            });
         });
     </script>
 <?php \frontend\components\JsBlock::end()?>

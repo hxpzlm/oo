@@ -1,0 +1,163 @@
+.os_newmain{
+	width: 1300px;
+	margin: 0 auto;
+	background: #F2F2F2;
+	border: 1px solid #CCCCCC;
+}
+
+.title_name{
+	width: 100%;
+	height: 25px;
+	line-height: 25px;
+	border-bottom: 1px solid #FFFFFF;
+	color: #333333;
+	display: block;
+	text-align: center;
+}
+
+.bar_j{
+	width: 100%;
+	height: 30px;
+	padding: 2px 0;
+	border-bottom: 1px solid #FFFFFF;
+}
+
+.bar_j p{
+	width: 10%;
+	height: 30px;
+	line-height: 30px;
+	float: left;
+	text-align: right;
+}
+
+.bar_j select{
+	width: 30%;
+	height: 30px;
+	float: left;
+}
+
+.bar_j span{
+	width: 50%;
+	padding: 0 5%;
+	height: 30px;
+	line-height: 30px;
+	display: block;
+	float: left;
+	color: #808080;
+	background: #FFFFFF;
+	
+}
+
+/*右侧内容部分*/
+.bar_jh{
+	padding: 1px 0;
+}
+
+.bar_jh,.input_addbox{
+	width: 100%;
+	background: #FFFFFF;
+}
+
+.input_addbox{
+	margin-bottom: 5px;
+	margin-left: 3px;
+}
+
+.bar_jh p{
+	width: 10%;
+	min-height: 30px;
+	float: left;
+	background: #F2F2F2;
+	text-align: right;
+}
+
+.input_box{
+	width: 80%;
+	float: left;
+}
+
+.autocomplete_s{
+	width: 35%;
+	height: 28px;
+	border: none;
+	float: left;
+	border: 1px solid #CCCCCC;
+	padding: 0 1%;
+}
+
+.input_addbox p{
+	width: 10%;
+	height: 30px;
+	line-height: 30px;
+	float: left;
+	text-align: center;
+	margin: 0 1%;
+	background: #FFFFFF;
+}
+
+.number_n{
+	width: 15%;
+	height: 28px;
+	border: 1px solid #CCCCCC;
+	float: left;
+}
+
+.number_d{
+	width: 5%;
+	height: 28px;
+	border: 1px solid #CCCCCC;
+	float: left;
+	margin: 0 1%;
+}
+
+.add_btn,.dj_btn{
+	width: 24px;
+	height: 24px;
+	display: block;
+	cursor: pointer;
+	margin: 3px 0 0 0;
+}
+
+.left_hs{
+	width: 10%;
+	height: 170px;
+	line-height: 170px;
+}
+
+.txt_are{
+	width: 29.5%;
+	height: 168px;
+	line-height: 160%;
+	padding: 1px;
+	color: #808080;
+	margin-left: 2px;
+	border: 1px solid #CCCCCC;
+	resize: none;
+}
+
+.btn_box{
+	width: 1300px;
+	height: 35px;
+	margin: 5px auto;
+	text-align: right;
+}
+
+.btn_box button{
+	width: 80px;
+	height: 35px;
+	border: 1px solid #CCCCCC;
+	border-radius: 5px;
+	color: #333333;
+	background: #FFFFFF;
+	cursor: pointer;
+}
+
+
+
+
+
+
+
+
+
+

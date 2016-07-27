@@ -40,14 +40,13 @@ class WarehouseController extends CommonController
         $where= array();
         if($user->store_id>0) $where['store_id']=$user->store_id;
         $tablePrefix = Yii::$app->getDb()->tablePrefix;
-        $query->select('*')->from($tablePrefix.'warehouse')->where($where)->orderBy(['sort'=>SORT_ASC]);
+        $query->select('*')->from($tablePrefix.'warehouse')->where($where)->orderBy(['sort'=>SORT_ASC,'create_time'=>SORT_DESC]);
         if(!empty($s_con['name'])) $query->andFilterWhere(['like','name',$s_con['name']]);
         $pagination = new Pagination([
-            'defaultPageSize' => 15,
+            'defaultPageSize' => 20,
             'totalCount' => $query->count(),
         ]);
-        $countries = $query->orderBy(['sort'=>SORT_ASC])
-            ->offset($pagination->offset)
+        $countries = $query->offset($pagination->offset)
             ->limit($pagination->limit)
             ->all();
 
@@ -101,18 +100,18 @@ class WarehouseController extends CommonController
         $model->load(Yii::$app->request->post());
         if(!empty($model->principal_id)) {
             $user_username = $query->from($tablePrefix . 'user')->where('user_id=' . $model->principal_id)->one();
-            $model->principal_name = $user_username['username'];
+            $model->principal_name = $user_username['real_name'];
         }
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['index', 'id' => $model->warehouse_id]);
         } else {
             //查负责人
-            $principal=$query->select('user_id,username')->from($tablePrefix.'user')->where('status=1 and store_id='.$user->store_id)->orderBy(['sort'=>SORT_ASC])->all();
+            $principal=$query->select('user_id,real_name')->from($tablePrefix.'user')->where('status=1 and store_id='.$user->store_id)->orderBy(['sort'=>SORT_ASC])->all();
             $principal_row = array();
             $principal_row['']='请选择';
             if(!empty($principal)){
                 foreach($principal as $value){
-                    $principal_row[$value['user_id']] = $value['username'];
+                    $principal_row[$value['user_id']] = $value['real_name'];
                 }
             }
             return $this->render('create', [
@@ -140,18 +139,18 @@ class WarehouseController extends CommonController
         $query = new \yii\db\Query;
         $tablePrefix = Yii::$app->getDb()->tablePrefix;
         if ($model->load(Yii::$app->request->post())) {
-            $user_username = $query->select('username')->from($tablePrefix.'user')->where('user_id='.$model->principal_id)->one();
-            $model->principal_name=$user_username['username'];
+            $user_username = $query->select('real_name')->from($tablePrefix.'user')->where('user_id='.$model->principal_id)->one();
+            $model->principal_name=$user_username['real_name'];
             $model->save();
             return $this->redirect(['index', 'id' => $model->warehouse_id]);
         } else {
             //查负责人
-            $principal=$query->select('user_id,username')->from($tablePrefix.'user')->where('status=1 and store_id='.$user->store_id)->orderBy(['sort'=>SORT_ASC])->all();
+            $principal=$query->select('user_id,real_name')->from($tablePrefix.'user')->where('status=1 and store_id='.$user->store_id)->orderBy(['sort'=>SORT_ASC])->all();
             $principal_row = array();
             $principal_row['']='请选择';
             if(!empty($principal)){
                 foreach($principal as $value){
-                    $principal_row[$value['user_id']] = $value['username'];
+                    $principal_row[$value['user_id']] = $value['real_name'];
                 }
             }
             return $this->render('update', [

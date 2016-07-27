@@ -11,7 +11,7 @@ use yii\widgets\ActiveForm;
         'method' => 'get',
     ]); ?>
 
-    <input name="unit" placeholder="请输入计量单位">
+<div class="close_btn"><input name="unit" placeholder="请输入计量单位"><img src="statics/img/close_icon.jpg" class="img_css"></div>
 
     <div class="form-group">
         <?= Html::submitButton(Yii::t('app', '<i class="iconfont">&#xe60d;</i>搜索')) ?>

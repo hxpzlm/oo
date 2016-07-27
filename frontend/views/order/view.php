@@ -53,7 +53,7 @@ $tablePrefix = Yii::$app->getDb()->tablePrefix;
             <?php
             if(!empty($goodlist)){
                 foreach($goodlist as $row){
-                    echo '<tr><td height="30">'.$row['name'].'</td><td>'.$row['spec'].'</td><td>'.$row['bname'].'</td><td>'.$row['sell_price'].'</td><td>'.$row['number'].'</td></tr>';
+                    echo '<tr><td height="30">'.$row['name'].'</td><td>'.$row['spec'].'</td><td>'.$row['bname'].'</td><td>'.$row['batch_num'].'</td><td>'.$row['sell_price'].'&nbsp;元'.'</td><td>'.$row['number'].'&nbsp;'.$row['unit_name'].'</td></tr>';
                 }
             }
             ?>
@@ -128,38 +128,24 @@ $tablePrefix = Yii::$app->getDb()->tablePrefix;
     </div>
     <div class="orders-look clearfix">
         <p class="orders-lookt1">物流单号:</p>
-        <p class="orders-lookt2"><?=!empty($model->delivey_code)?$model->delivey_code:''?></p>
+        <p class="orders-lookt2"><?=!empty($model->delivery_code)?$model->delivery_code:''?></p>
     </div>
     <h4 class="orders-newtade">系统信息</h4>
     <div class="orders-look clearfix">
         <p class="orders-lookt1">创建人:</p>
-        <p class="orders-lookt2">
-            <?php
-            if($model->add_user_id>0){
-                $add_user = $query->select('username')->from($tablePrefix.'user')->where('user_id='.$model->add_user_id)->one();
-                echo $add_user['username'];
-            }
-            ?>
-        </p>
+        <p class="orders-lookt2"><?=$model->add_user_name?></p>
     </div>
     <div class="orders-look clearfix">
         <p class="orders-lookt1">创建时间:</p>
-        <p class="orders-lookt2"><?=date('Y-m-d H:i:s',$model->create_time)?></p>
+        <p class="orders-lookt2"><?=date('Y-m-d',$model->create_time)?></p>
     </div>
     <div class="orders-look clearfix">
         <p class="orders-lookt1">审核人:</p>
-        <p class="orders-lookt2">
-            <?php
-            if($model->confirm_user_id>0){
-                $add_user = $query->select('username')->from($tablePrefix.'user')->where('user_id='.$model->confirm_user_id)->one();
-                echo $add_user['username'];
-            }
-            ?>
-        </p>
+        <p class="orders-lookt2"><?=$model->confirm_user_name?></p>
     </div>
     <div class="orders-look clearfix">
         <p class="orders-lookt1">审核时间:</p>
-        <p class="orders-lookt2"><?=date('Y-m-d H:i:s',$model->confirm_time)?></p>
+        <p class="orders-lookt2"><?=$model->confirm_time>0?date('Y-m-d',$model->confirm_time):''?></p>
     </div>
     <div class="orders-lookbut">
         <a href="javascript:" onclick="window.history.go(-1);">

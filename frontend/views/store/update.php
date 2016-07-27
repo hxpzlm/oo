@@ -37,11 +37,11 @@ $this->params['breadcrumbs'][] = $this->title;
 		<p>备注说明:</p>
         <?php echo $form->field($model,'remark')->textarea(['class'=>'orders-edt2'])?>
 	</div>
-	<div class="orders-edbut">
+    <div class="orders-newbut">
         <?= Html::submitButton(Yii::t('app', '保存')) ?>
-		<a href="<?=Url::to(['store/index'])?>">
-			<button class="orders-edbut2" type="button">返回</button>
-		</a>
-	</div>
+        <a href="<?=Url::to(['store/index'])?>">
+            <span class="orders-newbut2">返回</span>
+        </a>
+    </div>
     <?php ActiveForm::end()?>
 </div>

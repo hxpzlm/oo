@@ -39,7 +39,7 @@ class RefuseOrderGoods extends \yii\db\ActiveRecord
     {
         return [
             [['id'], 'required'],
-            [['id', 'goods_id', 'brand_id', 'unit_id', 'number', 'stocks_id'], 'integer'],
+            [['id', 'goods_id', 'brand_id', 'unit_id', 'number', 'stocks_id'], 'integer','message'=>'必须为数字'],
             [['sell_price'], 'number'],
             [['brand_name', 'barode_code', 'spec', 'unit_name', 'batch_num'], 'string', 'max' => 32],
             [['goods_name'], 'string', 'max' => 100],

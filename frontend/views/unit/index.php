@@ -10,8 +10,6 @@ AppAsset::register($this);
 $this->registerCssFile('@web/statics/css/css_plug/autocomplete.css',['depends'=>['yii\web\YiiAsset']]);
 $this->registerCssFile('@web/statics/svg/iconfont.css',['depends'=>['yii\web\YiiAsset']]);
 $this->registerCssFile('@web/statics/css/purchaseOrders-new.css',['depends'=>['yii\web\YiiAsset']]);
-$this->registerJsFile('@web/statics/js/js_global/jquery-1.10.1.min.js',['depends'=>['yii\web\YiiAsset']]);
-$this->registerJsFile('@web/statics/js/js_global/global.js',['depends'=>['yii\web\YiiAsset']]);
 $this->registerJsFile('@web/statics/js/js_plug/popup.js',['depends'=>['yii\web\YiiAsset']]);
 $this->registerJsFile('@web/statics/js/purchaseOrders.js',['depends'=>['yii\web\YiiAsset']]);
 $this->registerJsFile('@web/statics/js/js_plug/autocomplete.js',['depends'=>['yii\web\YiiAsset']]);
@@ -39,16 +37,12 @@ $unit_info = \frontend\components\Search::SearchUnit();
         <?php foreach($countries as $item):?>
 
 		<tr>
-		    <td align="left" width="5%"><input type="text" name="sort[<?=$item['unit_id']?>]" value="<?echo $item['sort']?>"></td>
+		    <td class="table-left" width="5%">&nbsp;<input type="text" name="sort[<?=$item['unit_id']?>]" value="<?echo $item['sort']?>"></td>
 		   	<td width="15%"><? echo $item['unit'] ?></td>
-		   	<td><? echo $item['remark'] ?></td>
-		   	<td align="right" width="10%">
+		   	<td class="table-left"><? echo $item['remark'] ?></td>
+		   	<td width="5%">
                 <?php if(Yii::$app->authManager->checkAccess(Yii::$app->user->identity->id,'unit/delete')==true){;?>
-                <?=Html::a('<i class="iconfont">&#xe605;</i>',['unit/delete','id'=>$item['unit_id']],
-                    ['class'=>'orders-infosc',
-                        'data'=>[ 'confirm' => '您确定要删除这条记录吗？删除后不可恢复！',
-                            'method' => 'post',],
-                    ])?>
+                    <a class="orders-infosc" href="javascript:;" nctype="<?=$item['unit_id']?>"><i class="iconfont">&#xe605;</i></a>
                 <?php }?>
                 <?php if(Yii::$app->authManager->checkAccess(Yii::$app->user->identity->id,'unit/update')==true){?>
 		   		<a href="<?=Url::to(['unit/update','id'=>$item['unit_id']])?>"><i class="iconfont">&#xe603;</i></a>
@@ -67,15 +61,14 @@ $unit_info = \frontend\components\Search::SearchUnit();
     ]);;?>
 </div>
 
-<!--删除弹窗-->
-<!--<div class="orders-sc">-->
-<!--	<p class="orders-sct1 clearfix">删除<i class="iconfont">&#xe608;</i></p>-->
-<!--	<p class="orders-sct2">您确定要删除这条记录吗？删除后不可恢复！</p>-->
-<!--	<div class="orders-sct3">-->
-<!--		<span>删除</span>-->
-<!--		<span class="orders-sct3qx">取消</span>-->
-<!--	</div>-->
-<!--</div>-->
+    <div class="orders-sc">
+        <p class="orders-sct1 clearfix">删除<i class="iconfont">&#xe608;</i></p>
+        <p class="orders-sct2">您确定要删除这条记录吗？删除后不可恢复！</p>
+        <div class="orders-sct3">
+            <a href="" data-method="post"><span class="orders-sct3qx" style="cursor: pointer">确定</span></a>
+            <span style="cursor: pointer">取消</span>
+        </div>
+    </div>
 <?php \frontend\components\JsBlock::begin()?>
     <script>
         $(function(){
@@ -84,7 +77,24 @@ $unit_info = \frontend\components\Search::SearchUnit();
                     <?php foreach($unit_info as $v){?>
                     {title:"<?=$v['unit']?>"},
                     <?php }?>
-                ]
+                ],
+                callback:function(data){
+                    $(".close_btn img").show();
+                    $(".close_btn img").click(function(){
+                        $("input[name='unit']").val('');
+                        $(this).hide();
+                    })
+                }
+            });
+            //删除
+            var sc;
+            $('.orders-infosc').click(function(){
+                var id = $(this).attr('nctype');
+                $('.orders-sct3>a').attr('href','<?=Url::to(['unit/delete'])?>&id='+id);
+                sc = $(".orders-sc").bPopup();
+            })
+            $(".orders-sct1 i,.orders-sct3 span").click(function(){
+                sc.close();
             });
         });
     </script>

@@ -2426,21 +2426,65 @@ class PHPExcel_Worksheet implements PHPExcel_IComparable
             // Loop through $source
             foreach ($source as $rowData) {
                 $currentColumn = $startColumn;
+                foreach ($rowData as $val) {
+                    $len=1;
+                    if(is_array($val)){
+                        $len = count($val);
+                        break;
+                    }
+                }
                 foreach ($rowData as $cellValue) {
                     if ($strictNullComparison) {
                         if ($cellValue !== $nullValue) {
                             // Set cell value
-                            $this->getCell($currentColumn . $startRow)->setValue($cellValue);
+                            if($len>1){
+                                if(is_array($cellValue)){
+                                    foreach ($cellValue as $k=>$val){
+                                        $this->getCell($currentColumn.($startRow+$k))->setValue($val);
+                                    }
+                                }else{
+                                    $this->mergeCells($currentColumn . $startRow.':'.$currentColumn . ($startRow+$len-1))->getCell($currentColumn . $startRow,':'.$currentColumn . ($startRow+$len-1))->setValue($cellValue);
+                                }
+                            }else{
+                                $this->getStyle($currentColumn . $startRow)->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
+                                if(is_array($cellValue)){
+                                    $this->getCell($currentColumn . $startRow)->setValue($cellValue[0]);
+                                }else{
+                                    $this->getCell($currentColumn . $startRow)->setValue($cellValue);
+                                }
+                            }
+
+
                         }
                     } else {
                         if ($cellValue != $nullValue) {
                             // Set cell value
-                            $this->getCell($currentColumn . $startRow)->setValue($cellValue);
+                            if($len>1){
+                                if(is_array($cellValue)){
+                                    foreach ($cellValue as $k=>$val){
+                                        $this->getCell($currentColumn.($startRow+$k))->setValue($val);
+                                    }
+                                }else{
+                                    $this->mergeCells($currentColumn . $startRow.':'.$currentColumn . ($startRow+$len-1))->getCell($currentColumn . $startRow,':'.$currentColumn . ($startRow+$len-1))->setValue($cellValue);
+                                }
+                            }else{
+                                $this->getStyle($currentColumn . $startRow)->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
+                                if(is_array($cellValue)){
+                                    $this->getCell($currentColumn . $startRow)->setValue($cellValue[0]);
+                                }else{
+                                    $this->getCell($currentColumn . $startRow)->setValue($cellValue);
+                                }
+
+                            }
                         }
                     }
                     ++$currentColumn;
                 }
-                ++$startRow;
+                if($len>1){
+                    $startRow=$len+$startRow;
+                }else{
+                    ++$startRow;
+                }
             }
         } else {
             throw new PHPExcel_Exception("Parameter \$source should be an array.");

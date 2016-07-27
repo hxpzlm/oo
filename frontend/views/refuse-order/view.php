@@ -2,7 +2,7 @@
 
 /* @var $this yii\web\View */
 
-$this->title = '销售订单-查看';
+$this->title = '退货订单-查看';
 use yii\helpers\Url;
 use frontend\assets\AppAsset;
 AppAsset::register($this);
@@ -36,7 +36,7 @@ $tablePrefix = Yii::$app->getDb()->tablePrefix;
     </div>
     <div class="orders-look clearfix">
         <p class="orders-lookt1">销售日期:</p>
-        <p class="orders-lookt2"><?=date('Y-m-d H:i:s',$model->sale_time)?></p>
+        <p class="orders-lookt2"><?=date('Y-m-d',$model->sale_time)?></p>
     </div>
     <h4 class="orders-newtade">客户信息</h4>
     <?php
@@ -73,11 +73,11 @@ $tablePrefix = Yii::$app->getDb()->tablePrefix;
     </div>
     <div class="orders-look clearfix">
         <p class="orders-lookt1">退货日期:</p>
-        <p class="orders-lookt2"><?=date('Y-m-d H:i:s', $model->refuse_time)?> 元</p>
+        <p class="orders-lookt2"><?=date('Y-m-d', $model->refuse_time)?></p>
     </div>
     <div class="orders-look clearfix">
         <p class="orders-lookt1">退货原因及说明:</p>
-        <p class="orders-lookt2"><?=$model->reason?> 元</p>
+        <p class="orders-lookt2"><?=$model->reason?></p>
     </div>
     <div class="orders-look clearfix">
         <p class="orders-lookt1">仓库:</p>
@@ -96,18 +96,30 @@ $tablePrefix = Yii::$app->getDb()->tablePrefix;
         <p class="orders-lookt2"><?=$model->remark?></p>
     </div>
     <h4 class="orders-newtade">退货入库信息</h4>
+    <div class="orders-look clearfix">
+        <p class="orders-lookt3">商品及赠品:</p>
+        <div class="goodsReceipt">
+            <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                <?php
+                    //$refuse_order_data = $query->select('goods_name,batch_num')->from($tablePrefix.'stocks')
+                    //->where('refuse_id='.Yii::$app->request->get('id'))->all();
+                    $refuse_order_data = $query->select('rog.goods_name,rog.sbatch_num')->from($tablePrefix.'refuse_order_goods as rog')
+                    ->leftJoin($tablePrefix.'refuse_order as ro','rog.refuse_id=ro.refuse_id')
+                    ->where('ro.status=1 and rog.refuse_id='.Yii::$app->request->get('id'))->all();
 
+                    if(!empty($refuse_order_data)){
+                        foreach($refuse_order_data as $row){
+                            echo '<tr><td height="30">'.$row['goods_name'].'</td><td>'.$row['sbatch_num'].'</td></tr>';
+                        }
+                    }
+                ?>
+            </table>
+        </div>
+    </div>
     <h4 class="orders-newtade">系统信息</h4>
     <div class="orders-look clearfix">
         <p class="orders-lookt1">创建人:</p>
-        <p class="orders-lookt2">
-            <?php
-            if($model->add_user_id>0){
-                $add_user = $query->select('username')->from($tablePrefix.'user')->where('user_id='.$model->add_user_id)->one();
-                echo $add_user['username'];
-            }
-            ?>
-        </p>
+        <p class="orders-lookt2"><?=$model->add_user_name?></p>
     </div>
     <div class="orders-look clearfix">
         <p class="orders-lookt1">创建时间:</p>
@@ -115,18 +127,11 @@ $tablePrefix = Yii::$app->getDb()->tablePrefix;
     </div>
     <div class="orders-look clearfix">
         <p class="orders-lookt1">审核人:</p>
-        <p class="orders-lookt2">
-            <?php
-            if($model->confirm_user_id>0){
-                $add_user = $query->select('username')->from($tablePrefix.'user')->where('user_id='.$model->confirm_user_id)->one();
-                echo $add_user['username'];
-            }
-            ?>
-        </p>
+        <p class="orders-lookt2"><?=$model->confirm_user_name?></p>
     </div>
     <div class="orders-look clearfix">
         <p class="orders-lookt1">审核时间:</p>
-        <p class="orders-lookt2"><?=date('Y-m-d H:i:s',$model->confirm_time)?></p>
+        <p class="orders-lookt2"><?=$model->confirm_time>0?date('Y-m-d H:i:s',$model->confirm_time):''?></p>
     </div>
     <div class="orders-lookbut">
         <a href="javascript:" onclick="window.history.go(-1);">

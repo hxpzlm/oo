@@ -7,7 +7,6 @@ $this->title = '品牌管理-修改';
 $this->params['breadcrumbs'][] = $this->title;
 
 AppAsset::register($this);
-$this->registerCssFile('@web/statics/css/css_global/style.css',['depends'=>['yii\web\YiiAsset']]);
 $this->registerCssFile('@web/statics/svg/iconfont.css',['depends'=>['yii\web\YiiAsset']]);
 $this->registerCssFile('@web/statics/css/purchaseOrders-new.css',['depends'=>['yii\web\YiiAsset']]);
 $this->registerCssFile('@web/statics/css/purchaseOrders-ed.css',['depends'=>['yii\web\YiiAsset']]);
@@ -42,10 +41,10 @@ $this->registerJsFile('@web/statics/js/js_global/global.js',['depends'=>['yii\we
         <?php echo $form->field($model,'remark')->textarea(['class'=>'orders-edt2'])?>
 	</div>
 	
-	<div class="orders-edbut">
+	<div class="orders-newbut">
 		<?=Html::submitButton(Yii::t('app','保存'))?>
 		<a href="<?=Url::to(['brand/index'])?>">
-			<button class="orders-edbut2" type="button">返回</button>
+			<span class="orders-newbut2" >返回</span>
 		</a>
 	</div>
     <?php ActiveForm::end();?>

@@ -44,11 +44,44 @@ class Excel extends \PHPExcel{
         $newSheet = $newExcel->getActiveSheet();
         $newSheet->fromArray($data);
         // 格式按自己需要，源码文件样例中有写，（下面这个其实是excel2003的标准）
-        $objWriter = \PHPExcel_IOFactory::createWriter($newExcel, 'Excel5');
+        $objWriter = \PHPExcel_IOFactory::createWriter($newExcel, 'Excel2007');
         // 保存数据到表格中
         $objWriter->save($outFile);
         unset($objWriter,$newSheet,$newExcel);
         return true;
+    }
+
+    /**
+     * 从excel中读取所有信息
+     * @param string $inFile
+     * @param array $index
+     * @return bool
+     */
+    public function readSheet($inFile, $index = false)
+    {
+        // 得到文件类型
+        $type = \PHPExcel_IOFactory::identify($inFile);
+        $reader = \PHPExcel_IOFactory::createReader($type);
+        // 导入文件
+        $sheet = $reader->load($inFile);
+        // 获取文件中表格sheet的数量
+        $sCount = $sheet->getSheetCount();
+        // 如果指定了获取某一个子表格（表格中，可能有多个子表格）的数据，转化为数组返回
+        if (is_int($index) && $index < $sCount && $index >= 0) {
+            return $sheet->getSheet($index)->toArray();
+        }
+        // 只有一个子表格
+        if ($sCount == 1) {
+            return $sheet->getSheet(0)->toArray();
+        }
+        $data = [];
+        // 所有表格数据全部以数组格式返回
+        for ($i=0; $i < $sCount; $i++) {
+            $data[] = $sheet->getSheet($i)->toArray();
+        }
+        unset($sheet,$reader, $type);
+
+        return $data;
     }
 
     /**

@@ -62,14 +62,23 @@ class PurchaseController extends CommonController
 
         //搜索条件
         $buy_time_start = strtotime(Yii::$app->request->get('buy_time_start')); //采购开始时间
-        $buy_time_end = strtotime(Yii::$app->request->get('buy_time_end')); //采购结束时间
+        $buy_time_end = strtotime(Yii::$app->request->get('buy_time_end').' 23:59:59'); //采购结束时间
         $where='';
         $store_id = Yii::$app->user->identity->store_id;
         if($store_id>0){
             $where['p.store_id'] = $store_id;
+        }else{
+            $sid = Yii::$app->request->get('store_id');
+            if(!empty($sid)){
+                $where['p.store_id'] = $sid;
+            }
         }
         if (!empty($s_con['warehouse_id'])) $where['p.warehouse_id'] = $s_con['warehouse_id']; //仓库
-        if (!empty($s_con['purchases_status'])) $where['p.purchases_status'] = $s_con['purchases_status']; //入库状态
+        if(isset($s_con['purchases_status'])){//入库状态
+            if($s_con['purchases_status']==1)  $where['purchases_status'] = $s_con['purchases_status'];
+            if($s_con['purchases_status']==2)  $where['purchases_status'] = 0;
+        }
+
         if (!empty($s_con['principal_id'])) $where['p.principal_id'] = $s_con['principal_id']; //负责人
 
         $query = (new \yii\db\Query())->from($tablePrefix.'purchase as p')
@@ -77,7 +86,7 @@ class PurchaseController extends CommonController
             ->leftJoin(['pg' => $tablePrefix.'purchase_goods'],'p.purchase_id = pg.purchase_id')
             ->leftJoin(['g' => $tablePrefix.'goods'],'pg.goods_id = g.goods_id')
             ->where($where)->orderBy(['p.purchase_id'=>SORT_DESC]);
-        if (!empty($s_con['goods_name'])) $query->andFilterWhere(['like', 'pg.goods_name',$s_con['goods_name']]); //商品中英文
+        if (!empty($s_con['goods_name'])) $query->andFilterWhere(['like', 'pg.goods_name',html_entity_decode($s_con['goods_name'])]); //商品中英文
         if (!empty($s_con['barode_code'])) $query->andFilterWhere(['like', 'pg.barode_code',$s_con['barode_code']]); //条形码
         if (!empty($s_con['brand_name'])) $query->andFilterWhere(['like', 'pg.brand_name',$s_con['brand_name']]); //商品品牌
         if (!empty($s_con['supplier_name'])) $query->andFilterWhere(['like', 'pg.supplier_name',$s_con['supplier_name']]); //供应商
@@ -86,7 +95,7 @@ class PurchaseController extends CommonController
             if(!empty($buy_time_end))  $query->andWhere(['<=','p.buy_time',$buy_time_end]);
         }
         $countQuery = clone $query;
-        $pages = new Pagination(['totalCount' => $countQuery->count(),'defaultPageSize'=>10]);
+        $pages = new Pagination(['totalCount' => $countQuery->count(),'defaultPageSize'=>20]);
         $dataProvider = $query->offset($pages->offset)
             ->limit($pages->limit)
             ->all();
@@ -94,7 +103,7 @@ class PurchaseController extends CommonController
         //导出表格
         if(Yii::$app->request->get('action')=='export'){
             $final = [['仓库','商品中英文名称（含规格）','品牌', '条形码','采购单价','采收数量','批号','采购时间','供应商','入库状态']];
-            foreach ($dataProvider as $row) {
+            foreach ($countQuery->all() as $row) {
 
                 $final[] = [
                     $row['warehouse_name'],$row['name'],$row['brand_name'],$row['barode_code']."\t",$row['buy_price'],$row['number'],$row['batch_num']."\t",date('Y-m-d',$row['buy_time']),$row['supplier_name'],($row['purchases_status']==0)?"否":"是",
@@ -106,6 +115,38 @@ class PurchaseController extends CommonController
             if($ret){
                 return $this->redirect('/'.$outFile);
             }
+        }
+
+        //ajax判断商品中英文名称是否存在
+        if(Yii::$app->request->post('action')=='gname'){
+            $goods_name = Yii::$app->request->post('goods_name');
+            $gw = '';
+            $store_id = Yii::$app->user->identity->store_id;
+            if($store_id>0){
+                $gw['store_id'] = $store_id;
+            }
+            if(!empty($goods_name)){
+                $gw['name'] = $goods_name;
+            }
+            $goods_info = (new \yii\db\Query())->from($tablePrefix.'goods')->where($gw)->one();
+
+            die(json_encode($goods_info));
+        }
+
+        //ajax判断供应商名称是否存在
+        if(Yii::$app->request->post('action')=='sname'){
+            $supplier_name = Yii::$app->request->post('supplier_name');
+            $sw['status'] = 1;
+            $store_id = Yii::$app->user->identity->store_id;
+            if($store_id>0){
+                $sw['store_id'] = $store_id;
+            }
+            if(!empty($supplier_name)){
+                $sw['name'] = $supplier_name;
+            }
+            $supplier_info = (new \yii\db\Query())->from($tablePrefix.'suppliers')->where($sw)->one();
+
+            die(json_encode($supplier_info));
         }
 
         return $this->render('index', [
@@ -173,6 +214,29 @@ class PurchaseController extends CommonController
             $model_pg->supplier_id = $purchasegoods['supplier_id'];
             $model_pg->supplier_name = $purchasegoods['supplier_name'];
 
+            //填写情况
+            if(Yii::$app->user->identity->store_id>0){
+                $gw['store_id']=Yii::$app->user->identity->store_id;
+                $sw['store_id']=Yii::$app->user->identity->store_id;
+            }
+            $gw['name'] = $purchasegoods['goods_name'];
+            $sw['name'] = $purchasegoods['supplier_name'];
+
+            if(empty($purchasegoods['goods_id'])){
+                $goods_row = (new \yii\db\Query())->from(Yii::$app->getDb()->tablePrefix.'goods')->where($gw)->one();
+                $model_pg->goods_id = $goods_row['goods_id'];
+                $model_pg->spec = $goods_row['spec'];
+                $model_pg->brand_id = $goods_row['brand_id'];
+                $model_pg->brand_name = $goods_row['brand_name'];
+                $model_pg->barode_code = $goods_row['barode_code'];
+                $model_pg->unit_id = $goods_row['unit_id'];
+                $model_pg->unit_name = $goods_row['unit_name'];
+            }
+            if(empty($purchasegoods['supplier_id'])){
+                $supplier_row = (new \yii\db\Query())->from(Yii::$app->getDb()->tablePrefix.'suppliers')->where($sw)->one();
+                $model_pg->supplier_id = $supplier_row['suppliers_id'];
+            }
+
             if($model_pg->save()){
                 return $this->redirect(['index']);
             }
@@ -200,8 +264,11 @@ class PurchaseController extends CommonController
         //更新采购表
         if ($model->load(Yii::$app->request->post())) {
             $purchase = Yii::$app->request->post('Purchase');
+
             $model->invalid_time = strtotime($purchase['invalid_time']);
             $model->buy_time = strtotime($purchase['buy_time']);
+            $model->invoice_and_pay_sate = $purchase['invoice_and_pay_sate'];
+            $model->remark = $purchase['remark'];
 
             if($model->save()){
                 //更新采购商品表
@@ -220,6 +287,29 @@ class PurchaseController extends CommonController
                 $model_pg->number = $purchasegoods['number'];
                 $model_pg->supplier_id = $purchasegoods['supplier_id'];
                 $model_pg->supplier_name = $purchasegoods['supplier_name'];
+
+                //填写情况
+                if(Yii::$app->user->identity->store_id>0){
+                    $gw['store_id']=Yii::$app->user->identity->store_id;
+                    $sw['store_id']=Yii::$app->user->identity->store_id;
+                }
+                $gw['name'] = $purchasegoods['goods_name'];
+                $sw['name'] = $purchasegoods['supplier_name'];
+
+                if(empty($purchasegoods['goods_id'])){
+                    $goods_row = (new \yii\db\Query())->from(Yii::$app->getDb()->tablePrefix.'goods')->where($gw)->one();
+                    $model_pg->goods_id = $goods_row['goods_id'];
+                    $model_pg->spec = $goods_row['spec'];
+                    $model_pg->brand_id = $goods_row['brand_id'];
+                    $model_pg->brand_name = $goods_row['brand_name'];
+                    $model_pg->barode_code = $goods_row['barode_code'];
+                    $model_pg->unit_id = $goods_row['unit_id'];
+                    $model_pg->unit_name = $goods_row['unit_name'];
+                }
+                if(empty($purchasegoods['supplier_id'])){
+                    $supplier_row = (new \yii\db\Query())->from(Yii::$app->getDb()->tablePrefix.'suppliers')->where($sw)->one();
+                    $model_pg->supplier_id = $supplier_row['suppliers_id'];
+                }
             }
 
             if ($model_pg->save()) {

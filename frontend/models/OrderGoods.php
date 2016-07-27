@@ -42,7 +42,7 @@ class OrderGoods extends \yii\db\ActiveRecord
             [['id', 'order_id'], 'required'],
             [['id', 'goods_id', 'brand_id', 'unit_id', 'number', 'stocks_id', 'refuse_id'], 'integer'],
             [['sell_price'], 'number'],
-            [['order_id', 'brand_name', 'barode_code', 'spec', 'unit_name', 'batch_num'], 'string', 'max' => 32],
+            [['order_id', 'brand_name', 'spec', 'unit_name', 'batch_num'], 'string', 'max' => 32],
             [['goods_name'], 'string', 'max' => 100],
         ];
     }

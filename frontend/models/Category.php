@@ -41,8 +41,7 @@ class Category extends \yii\db\ActiveRecord
             [['name', 'add_user_name'], 'string', 'max' => 20],
             [['store_name'], 'string', 'max' => 32],
             [['sort'], 'required', 'message'=>'排序不能为空'],
-            [['status'], 'required', 'message'=>'排序不能为空'],
-            [['name'], 'unique', 'message' => '分类名称已存在.'],
+            //[['name'], 'unique', 'filter'=>['store_id'=>Yii::$app->user->identity->store_id], 'message' => '分类名称已存在.'],
         ];
 }
 

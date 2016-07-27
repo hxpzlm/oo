@@ -40,13 +40,13 @@ if(!empty($user)){
     $user_row[''] = '请选择';
     foreach($user as $value){
         if($value['type']==2){
-            $user_row[$value['user_id']] = $value['username'];
+            $user_row[$value['user_id']] = $value['real_name'];
         }
     }
 }
 
 $good_list = \frontend\components\Search::SearchGoods();
-$supplier_list = \frontend\components\Search::SearchSupplier();
+$supplier_list = (new \yii\db\Query())->from(Yii::$app->getDb()->tablePrefix.'suppliers')->where('status=1'.$s_store_id)->orderBy(['sort'=>SORT_ASC,'create_time'=>SORT_DESC])->all();
 ?>
 <?php $form = ActiveForm::begin(); ?>
     <?php if($model->isNewRecord){?>
@@ -54,7 +54,7 @@ $supplier_list = \frontend\components\Search::SearchSupplier();
         <?= Html::activeHiddenInput($model,'store_name',['value'=>$userinfo['store_name']])?>
         <?= Html::activeHiddenInput($model,'create_time',['value'=>time()])?><!--创建时间-->
         <?= Html::activeHiddenInput($model,'add_user_id',['value'=>$userinfo['user_id']])?><!--创建人id-->
-        <?= Html::activeHiddenInput($model,'add_user_name',['value'=>$userinfo['username']])?>
+        <?= Html::activeHiddenInput($model,'add_user_name',['value'=>$userinfo['real_name']])?>
     <?php }?>
 
     <div class="orders-new clearfix">
@@ -67,6 +67,7 @@ $supplier_list = \frontend\components\Search::SearchSupplier();
         <p>商品中英文名称:</p>
         <?= $form->field($model_pg, 'goods_name')->textInput()->label(false)->hint('<label>* 在此输入会自动过滤商品。选择商品后下面的商品信息会自动填写。</label>') ?>
         <input type="hidden" id="purchasegoods-goods_id" name="PurchaseGoods[goods_id]" value="<?=$model_pg->goods_id?>" />
+        <span id="g_name" style="color: red; margin: 0; font-weight: bold;"></span>
     </div>
     <div class="orders-new clearfix">
         <p>规格:</p>
@@ -103,6 +104,7 @@ $supplier_list = \frontend\components\Search::SearchSupplier();
     <div class="orders-new clearfix">
         <p>失效日期:</p>
         <?= $form->field($model, 'invalid_time')->textInput(['id'=>'ex-date','class'=>'laydate-icon','value'=>$model->invalid_time>0?date('Y-m-d', $model->invalid_time):'','onblur'=>"SetHfdValue3(this.value)"])->label(false)->hint('<label>* </label>') ?>
+        <span id="invalid_time" style="color: red; margin: 0; font-weight: bold;"></span>
     </div>
     <div class="orders-new clearfix">
         <p>批号:</p>
@@ -110,12 +112,13 @@ $supplier_list = \frontend\components\Search::SearchSupplier();
     </div>
     <div class="orders-new clearfix">
         <p>采购日期:</p>
-        <?= $form->field($model, 'buy_time')->textInput(['id'=>'pur-date','class'=>'laydate-icon','value'=>$model->buy_time>0?date('Y-m-d', $model->buy_time):''])->label(false)->hint('<label>* </label>') ?>
+        <?= $form->field($model, 'buy_time')->textInput(['id'=>'pur-date','class'=>'laydate-icon','value'=>$model->buy_time>0?date('Y-m-d', $model->buy_time):date('Y-m-d', time())])->label(false)->hint('<label>* </label>') ?>
     </div>
     <div class="orders-new clearfix">
         <p>供应商:</p>
         <?= $form->field($model_pg, 'supplier_name')->textInput()->label(false)->hint('<label>* </label>') ?>
         <input type="hidden" id="purchasegoods-supplier_id" name="PurchaseGoods[supplier_id]" value="<?=$model_pg['supplier_id']?>" />
+        <span id="s_name" style="color: red; margin: 0; font-weight: bold;"></span>
     </div>
     <div class="orders-new clearfix">
         <p class="orders-newt1">发票和付款情况:</p>
@@ -134,21 +137,27 @@ $supplier_list = \frontend\components\Search::SearchSupplier();
     <div class="orders-newbut">
         <?= Html::submitButton('保存', ['class' =>'orders-edbut']) ?>
         <a href="<?=Url::to(['purchase/index'])?>">
-            <button class="orders-newbut2" type="button">返回</button>
+            <span class="orders-newbut2">返回</span>
         </a>
     </div>
 <?php ActiveForm::end(); ?>
 <?php \frontend\components\JsBlock::begin()?>
     <script>
         $(function(){
+            //选择商品中英文名称
             $("input[name='PurchaseGoods[goods_name]']").bigAutocomplete({
                 width:510,
                 data:[
                     <?php foreach($good_list as $v){?>
-                    {title:"<?=$v['name']?>",result:{brand_name:"<?=$v['brand_name']?>",spec:"<?=$v['spec']?>",unit_name:"<?=$v['unit_name']?>",barode_code:"<?=$v['barode_code']?>",goods_id:"<?=$v['goods_id']?>",brand_id:"<?=$v['brand_id']?>",unit_id:"<?=$v['unit_id']?>"}},
+                    {title:"<?=$v['name']?>",result:{goods_name:"<?=$v['name']?>",brand_name:"<?=$v['brand_name']?>",spec:"<?=$v['spec']?>",unit_name:"<?=$v['unit_name']?>",barode_code:"<?=$v['barode_code']?>",goods_id:"<?=$v['goods_id']?>",brand_id:"<?=$v['brand_id']?>",unit_id:"<?=$v['unit_id']?>"}},
                     <?php }?>
-        ],
+                ],
                 callback:function(data){
+
+                    $("#g_name").text('');
+                    $('.orders-edbut').attr('disabled',false);
+
+                    $("#purchasegoods-goods_name").val(data.result.goods_name);
                     $("#purchasegoods-brand_name").val(data.result.brand_name);
                     $("#purchasegoods-spec").val(data.result.spec);
                     $("#purchasegoods-unit_name").val(data.result.unit_name);
@@ -158,6 +167,7 @@ $supplier_list = \frontend\components\Search::SearchSupplier();
                     $("#purchasegoods-unit_id").val(data.result.unit_id);
                 }
             });
+
             $("input[name='PurchaseGoods[supplier_name]']").bigAutocomplete({
                 width:510,
                 data:[
@@ -166,17 +176,89 @@ $supplier_list = \frontend\components\Search::SearchSupplier();
                     <?php }?>
                 ],
                 callback:function(data){
+
+                    $("#s_name").text('');
+                    $('.orders-edbut').attr('disabled',false);
+
                     $("#purchasegoods-supplier_id").val(data.result.suppliers_id);
                 }
             });
 
         });
+
+        //验证商品中英文名称是否存在
+        $("input[name='PurchaseGoods[goods_name]']").keyup(function(){
+            var goods_name = $("input[name='PurchaseGoods[goods_name]']").val();
+            if(goods_name!=''){
+                $.post("<?=Url::to(['purchase/index'])?>",{action:'gname',goods_name:goods_name},function(result){
+                    if(result==''){
+                        $("#g_name").text('商品中英文名称不存在');
+                        $(".field-purchasegoods-goods_name>.hint-block").html("");
+                        $('.orders-edbut').attr('disabled',true);
+                        return false;
+                    }else{
+                        $("#purchasegoods-goods_name").val(result.name);
+                        $("#purchasegoods-brand_name").val(result.brand_name);
+                        $("#purchasegoods-spec").val(result.spec);
+                        $("#purchasegoods-unit_name").val(result.unit_name);
+                        $("#purchasegoods-barode_code").val(result.barode_code);
+                        $("#purchasegoods-goods_id").val(result.goods_id);
+                        $("#purchasegoods-brand_id").val(result.brand_id);
+                        $("#purchasegoods-unit_id").val(result.unit_id);
+                        $("#g_name").text('');
+                        $('.orders-edbut').attr('disabled',false);
+                    }
+                },'json');
+            }else{
+                $("#purchasegoods-goods_name").val('');
+                $("#purchasegoods-brand_name").val('');
+                $("#purchasegoods-spec").val('');
+                $("#purchasegoods-unit_name").val('');
+                $("#purchasegoods-barode_code").val('');
+                $("#purchasegoods-goods_id").val('');
+                $("#purchasegoods-brand_id").val('');
+                $("#purchasegoods-unit_id").val('');
+            }
+
+        });
+
+        //验证供应商是否存在
+        $("input[name='PurchaseGoods[supplier_name]']").keyup(function(){
+            var supplier_name = $("input[name='PurchaseGoods[supplier_name]']").val();
+            if(supplier_name!=''){
+                $.post("<?=Url::to(['purchase/index'])?>",{action:'sname',supplier_name:supplier_name},function(result){
+                    if(result==''){
+                        $("#s_name").text('供应商名称不存在');
+                        $('.orders-edbut').attr('disabled',true);
+                        return false;
+                    }else{
+                        $("#purchasegoods-supplier_id").val(result.suppliers_id);
+                        $("#s_name").text('');
+                        $('.orders-edbut').attr('disabled',false);
+                    }
+                },'json');
+            }
+
+        });
+
     </script>
     <script type="text/javascript">
         laydate({ elem: '#ex-date', //目标元素。由于laydate.js封装了一个轻量级的选择器引擎，因此elem还允许你传入class、tag但必须按照这种方式 '#id .class'
         event: 'focus',
         // 响应事件。如果没有传入event，则按照默认的click
         choose: function (datas) { //选择日期完毕的回调
+            var timestamp = Date.parse(new Date());
+            timestamp = timestamp / 1000;//当前时间
+            var timestamp2 = Date.parse(new Date(datas));
+            timestamp2 = timestamp2 / 1000;//失效日期
+            if(timestamp2<timestamp){
+                $("#invalid_time").text('失效日期必须大于当前时间');
+                $('.orders-edbut').attr('disabled',true);
+                return false;
+            }else{
+                $("#invalid_time").text('');
+                $('.orders-edbut').attr('disabled',false);
+            }
             SetHfdValue3(datas);
         }
         });

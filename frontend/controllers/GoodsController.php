@@ -18,7 +18,14 @@ class GoodsController extends CommonController
         $goods_inf = Yii::$app->request->queryParams;
         $user = Yii::$app->user->identity;
         $where = array();
-        if($user->store_id>0) $where['store_id']=$user->store_id;
+        if($user->store_id>0){
+            $where['store_id']=$user->store_id;
+        }else{
+            $sid = Yii::$app->request->get('store_id');
+            if(!empty($sid)){
+                $where['store_id'] = $sid;
+            }
+        }
         $query = new \Yii\db\Query;
         $tablePrefix = Yii::$app->getDb()->tablePrefix;
         $query->select('goods_id,name,spec,brand_name,unit_name,barode_code,weight,volume,shelf_life,cat_id,cat_name,principal_name,sort')->from($tablePrefix.'goods')
@@ -26,12 +33,12 @@ class GoodsController extends CommonController
         if (!empty($goods_inf['name'])) $query->andFilterWhere(['like', 'name',$goods_inf['name']]); //商品名称
         if (!empty($goods_inf['barode_code'])) $query->andFilterWhere(['like', 'barode_code',$goods_inf['barode_code']]); //条形码
         if (!empty($goods_inf['brand_name'])) $query->andFilterWhere(['like', 'brand_name',$goods_inf['brand_name']]); //品牌
-        if (!empty($goods_inf['supplier_name'])) $query->andFilterWhere(['like', 'supplier_name',$goods_inf['supplier_name']]); //负责人
+        if (!empty($goods_inf['principal_name'])) $query->andFilterWhere(['like', 'principal_name',$goods_inf['principal_name']]); //负责人
         //分类
         $cat_id_get=Yii::$app->request->get('cat_id');
         if($cat_id_get){
             $query->select('goods_id,name,spec,brand_name,unit_name,barode_code,weight,volume,shelf_life,cat_id,cat_name,principal_name,sort')->from($tablePrefix.'goods')
-                ->where('cat_id='.$cat_id_get)->orderBy(['sort'=>SORT_ASC]);
+                ->where('cat_id='.$cat_id_get)->orderBy(['sort'=>SORT_ASC,'create_time'=>SORT_DESC]);
         }
 
         //导出表格
@@ -65,10 +72,10 @@ class GoodsController extends CommonController
         };
 
         $pagination = new Pagination([
-            'defaultPageSize' => 15,
+            'defaultPageSize' => 20,
             'totalCount' => $query->count(),
         ]);
-        $countries = $query->orderBy(['sort'=>SORT_ASC])
+        $countries = $query->orderBy(['sort'=>SORT_ASC,'create_time'=>SORT_DESC])
             ->offset($pagination->offset)
             ->limit($pagination->limit)
             ->all();
@@ -90,18 +97,27 @@ class GoodsController extends CommonController
         $tablePrefix = Yii::$app->getDb()->tablePrefix;
 
             $model->load(Yii::$app->request->post());
-        if(!empty($model->brand_id)){
-            $brand_name = (new Yii\db\Query)->select('name')->from($tablePrefix.'brand')->where('brand_id='.$model->brand_id)->one();
-            $model->brand_name=$brand_name['name'];
+        if(empty($model->brand_id) && !empty($model->brand_name)){
+            $brand_name = (new Yii\db\Query)->select('brand_id')->from($tablePrefix.'brand')->where('name='."'$model->brand_name.'")->one();
+            if(empty($brand_name)){
+                echo '<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />';
+                echo "<script>alert('此品牌名不存在');location.href='';</script>";
+                exit;
+            }else{
+                $model->brand_id=$brand_name['brand_id'];
+            }
+
         }
         if(!empty($model->cat_id)) {
             $category_name = (new Yii\db\Query)->select('name')->from($tablePrefix . 'category')->where('cat_id=' . $model->cat_id)->one();
             $model->cat_name = $category_name['name'];
         }
         if(!empty($model->principal_id)) {
-            $user_username = (new Yii\db\Query)->select('username')->from($tablePrefix . 'user')->where('user_id=' . $model->principal_id)->one();
-            $model->principal_name = $user_username['username'];
+            $user_username = (new Yii\db\Query)->select('real_name')->from($tablePrefix . 'user')->where('user_id=' . $model->principal_id)->one();
+            $model->principal_name = $user_username['real_name'];
         }
+        $goods = Yii::$app->request->post('Goods');
+        $model->unit_name = (!empty($goods['unit_name']) && $goods['unit_name']!='请选择')?$goods['unit_name']:'';
         //print_r(Yii::$app->request->post());die;
         if($model->load(Yii::$app->request->post())&&$model->save()){
 
@@ -121,28 +137,46 @@ class GoodsController extends CommonController
                     $brand_row[$value['brand_id']] = $value['name'];
                 }
             }
-            //查分类信息
-            $category=$query->select('name,cat_id')->from($tablePrefix.'category')->where($where)->orderBy(['sort'=>SORT_ASC])->all();
-            $cat_row = array();
+
+            //查询分类信息
+            $ow=array();$ow['status']=1;
+            if($store_id>0) $ow['store_id']=$store_id;
+            $ow['parent_id'] = 0;
+            $category=$query->select('name,cat_id,parent_id')->from($tablePrefix.'category')->where($ow)->orderBy(['sort'=>SORT_ASC])->all();
             if(!empty($category)){
-                $cat_row[''] = '请选择';
-                foreach($category as $value){
-                    $cat_row[$value['cat_id']] = $value['name'];
+                $data = array();
+                $data[''] = '请选择';
+                foreach($category as $v1){
+                    $data[$v1['cat_id']] = $v1['name'];
+                    $category2=$query->select('name,cat_id,parent_id')->from($tablePrefix.'category')->where('parent_id='.$v1['cat_id'])->orderBy(['sort'=>SORT_ASC])->all();
+                    if(!empty($category2)){
+                        foreach($category2 as $v2){
+                            $data[$v2['cat_id']] = $v2['name'];
+                            $category3=$query->select('name,cat_id,parent_id')->from($tablePrefix.'category')->where('parent_id='.$v2['cat_id'])->orderBy(['sort'=>SORT_ASC])->all();
+                            if(!empty($category3)){
+                                foreach($category3 as $v3){
+                                    $data[$v3['cat_id']] = $v3['name'];
+                                }
+                            }
+                        }
+                    }
+
                 }
             }
+
             //查负责人
-            $principal=$query->select('username,user_id')->from($tablePrefix.'user')->where($where)->orderBy(['sort'=>SORT_ASC])->all();
+            $principal=$query->select('real_name,user_id')->from($tablePrefix.'user')->where($where)->orderBy(['sort'=>SORT_ASC])->all();
             $principal_row = array();
             if(!empty($principal)){
-                $principal_row[$user->id] = $user->username;
+                $principal_row[$user->id] = $user->real_name;
                 foreach($principal as $value){
-                    $principal_row[$value['user_id']] = $value['username'];
+                    $principal_row[$value['user_id']] = $value['real_name'];
                 }
             }
             return $this->render('create', [
                 'model' => $model,
                 'brand_row'=>$brand_row,
-                'cat_row' => $cat_row,
+                'cat_row' => $data,
                 'principal_row' => $principal_row,
             ]);
         }
@@ -162,8 +196,12 @@ class GoodsController extends CommonController
             $model->brand_name=$brand_name['name'];
             $category_name = (new Yii\db\Query)->select('name')->from($tablePrefix.'category')->where('cat_id='.$model->cat_id)->one();
             $model->cat_name=$category_name['name'];
-            $user_username = (new Yii\db\Query)->select('username')->from($tablePrefix.'user')->where('user_id='.$model->principal_id)->one();
-            $model->principal_name=$user_username['username'];
+            $user_username = (new Yii\db\Query)->select('real_name')->from($tablePrefix.'user')->where('user_id='.$model->principal_id)->one();
+            $model->principal_name=$user_username['real_name'];
+
+            $goods = Yii::$app->request->post('Goods');
+            $model->unit_name = (!empty($goods['unit_name']) && $goods['unit_name']!='请选择')?$goods['unit_name']:'';
+
             $transaction = Yii::$app->db->beginTransaction();
             //事务回滚
             try {
@@ -203,28 +241,46 @@ class GoodsController extends CommonController
                     $brand_row[$value['brand_id']] = $value['name'];
                 }
             }
-            //查分类信息
-            $category=$query->select('name,cat_id')->from($tablePrefix.'category')->where($where)->orderBy(['sort'=>SORT_ASC])->all();
-            $cat_row = array();
+
+            //查询分类信息
+            $ow=array();$ow['status']=1;
+            if($store_id>0) $ow['store_id']=$store_id;
+            $ow['parent_id'] = 0;
+            $category=$query->select('name,cat_id,parent_id')->from($tablePrefix.'category')->where($ow)->orderBy(['sort'=>SORT_ASC])->all();
             if(!empty($category)){
-                $cat_row[] = '请选择';
-                foreach($category as $value){
-                    $cat_row[$value['cat_id']] = $value['name'];
+                $data = array();
+                $data[''] = '请选择';
+                foreach($category as $v1){
+                    $data[$v1['cat_id']] = $v1['name'];
+                    $category2=$query->select('name,cat_id,parent_id')->from($tablePrefix.'category')->where('parent_id='.$v1['cat_id'])->orderBy(['sort'=>SORT_ASC])->all();
+                    if(!empty($category2)){
+                        foreach($category2 as $v2){
+                            $data[$v2['cat_id']] = $v2['name'];
+                            $category3=$query->select('name,cat_id,parent_id')->from($tablePrefix.'category')->where('parent_id='.$v2['cat_id'])->orderBy(['sort'=>SORT_ASC])->all();
+                            if(!empty($category3)){
+                                foreach($category3 as $v3){
+                                    $data[$v3['cat_id']] = $v3['name'];
+                                }
+                            }
+                        }
+                    }
+
                 }
             }
+
             //查负责人
-            $principal=$query->select('username,user_id')->from($tablePrefix.'user')->where($where)->orderBy(['sort'=>SORT_ASC])->all();
+            $principal=$query->select('real_name,user_id')->from($tablePrefix.'user')->where($where)->orderBy(['sort'=>SORT_ASC])->all();
             $principal_row = array();
             if(!empty($principal)){
-                $principal_row[$user->id] = $user->username;
+                $principal_row[$user->id] = $user->real_name;
                 foreach($principal as $value){
-                    $principal_row[$value['user_id']] = $value['username'];
+                    $principal_row[$value['user_id']] = $value['real_name'];
                 }
             }
             return $this->render('update', [
                 'model' => $model,
                 'brand_row'=>$brand_row,
-                'cat_row' => $cat_row,
+                'cat_row' => $data,
                 'principal_row' => $principal_row,
             ]);
         }

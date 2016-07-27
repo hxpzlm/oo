@@ -47,12 +47,12 @@ class CategoryController extends CommonController
             $parent_id=Yii::$app->request->get('parent_id');
         }
         $where['parent_id'] = $parent_id;
-        $query->select('cat_id,name,sort,parent_id,remark,status')->from($tablePrefix.'category')->where($where)->orderBy(['sort'=>SORT_ASC]);
+        $query->select('cat_id,name,sort,parent_id,remark,status')->from($tablePrefix.'category')->where($where)->orderBy(['sort'=>SORT_ASC,'create_time'=>SORT_DESC]);
 
         if(!empty($s_con['name'])) $query->andFilterWhere(['like','name',$s_con['name']]);
 
         $pagination = new Pagination([
-            'defaultPageSize' => 15,
+            'defaultPageSize' => 20,
             'totalCount' => $query->count(),
         ]);
         //确认排序
@@ -67,10 +67,23 @@ class CategoryController extends CommonController
                 }
             }
         };
-        $countries = $query->orderBy(['sort'=>SORT_ASC])
-            ->offset($pagination->offset)
+        $countries = $query->offset($pagination->offset)
             ->limit($pagination->limit)
             ->all();
+
+        //ajax判断同父级别分类是否重复
+        if(Yii::$app->request->post('action')=='e_cname'){
+            $cw = '';
+            $store_id = Yii::$app->user->identity->store_id;
+            if($store_id>0){
+                $cw['store_id'] = $store_id;
+            }
+            $cw['parent_id'] = Yii::$app->request->post('parent_id');
+            $cw['name'] = Yii::$app->request->post('name');
+            $res = $query->from($tablePrefix.'category')->where($cw)->count();
+            die(json_encode($res));
+
+        }
 
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -99,11 +112,11 @@ class CategoryController extends CommonController
     public function actionCreate()
     {
         $model = new Category();
-        $model->load($_POST);
+        /*$model->load($_POST);
         if (Yii::$app->request->isAjax) {
             Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
             return \yii\bootstrap\ActiveForm::validate($model);
-        }
+        }*/
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['index']);
         } else {
@@ -125,11 +138,11 @@ class CategoryController extends CommonController
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-        $model->load($_POST);
-        if (Yii::$app->request->isAjax) {
-            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-            return \yii\bootstrap\ActiveForm::validate($model);
-        }
+//        $model->load($_POST);
+//        if (Yii::$app->request->isAjax) {
+//            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+//            return \yii\bootstrap\ActiveForm::validate($model);
+//        }
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['index', 'id' => $model->cat_id]);
         } else {

@@ -33,7 +33,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'captchaAction'=>'reset/captcha',
                     'template'=>"{input}<div class='verificationCode'><div>{image}</div></div>",
                     'options'=>[
-                        'placeholder'=> "请输入右侧验证码",
+                        'placeholder'=> "请输入下方验证码",
                         'id'=>'verificationCode',
                     ],'imageOptions' => [
                         'alt' => '点击更换验证码',

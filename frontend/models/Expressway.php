@@ -35,7 +35,7 @@ class Expressway extends \yii\db\ActiveRecord
             [['remark'], 'string'],
             [['add_user_name'], 'string', 'max' => 20],
             [['name'], 'string', 'max' => 32],
-            [['name'], 'unique', 'message' => '名称已存在.'],
+            [['name'], 'unique', 'filter'=>['store_id'=>Yii::$app->user->identity->store_id], 'message' => '名称已存在.'],
             [['sort'], 'required','message'=>'顺序不能为空'],
             [['status'], 'required','message'=>'顺序不能为空'],
         ];

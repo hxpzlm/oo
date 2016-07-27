@@ -18,17 +18,16 @@ class HuyiSms{
     public $username = 'cf_xieryaoye';
     public $password = 'xixieryaoye!!';
 
-    public function send($mobile){
+    public function send($mobile,$content,$mobile_code=""){
 
         if(!Yii::$app->session->isActive){
             Yii::$app->session->open();
         }
-        $mobile_code = $this->random(6,1);
         $data = [
             'account'=>$this->username,
             'password'=>Md5($this->password),
             'mobile' =>$mobile,
-            'content'=>"您的验证码是：".$mobile_code."。请不要把验证码泄露给其他人。",
+            'content'=>$content,//"。请不要把验证码泄露给其他人。",
           ];
         $ch = curl_init();
         curl_setopt($ch,CURLOPT_URL,$this->url);
@@ -39,13 +38,15 @@ class HuyiSms{
         curl_close($ch);
         $resultArr = $this->xml($result);
         $status = $resultArr['SubmitResult'];
-        if($status['code']==2){
-            Yii::$app->session->set('smsCode',$mobile_code);
+        if($mobile_code){
+            if($status['code']==2){
+                Yii::$app->session->set('smsCode',$mobile_code);
+            }
         }
         return $status;
     }
 
-    protected function random($length = 6 , $numeric = 0) {
+    public static function random($length = 6 , $numeric = 0) {
         PHP_VERSION < '4.2.0' && mt_srand((double)microtime() * 1000000);
         if($numeric) {
             $hash = sprintf('%0'.$length.'d', mt_rand(0, pow(10, $length) - 1));

@@ -58,11 +58,17 @@ class ShopController extends CommonController
         $searchModel = new ShopSearch();
         $s_con = Yii::$app->request->queryParams;
         $name = !empty($s_con['ShopSearch']['name']) ? $s_con['ShopSearch'] : '';
+        $where='';
+        $store_id = Yii::$app->user->identity->store_id;
+        if($store_id>0){
+            $where['store_id'] = $store_id;
+        }
+
         $query = Shop::find();
         if (!empty($name)) $query->andFilterWhere(['like', 'name',$name]); //销售平台名称
         $countQuery = clone $query;
         $pages = new Pagination(['totalCount' => $countQuery->count(),'defaultPageSize'=>20]);
-        $dataProvider = $query->orderBy(['sort'=>SORT_ASC,'shop_id'=>SORT_DESC])->offset($pages->offset)
+        $dataProvider = $query->where($where)->orderBy(['sort'=>SORT_ASC,'shop_id'=>SORT_DESC])->offset($pages->offset)
             ->limit($pages->limit)
             ->all();
 
@@ -107,8 +113,15 @@ class ShopController extends CommonController
     {
         $model = new Shop();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->shop_id]);
+        if ($model->load(Yii::$app->request->post())) {
+            if (Yii::$app->request->isAjax) {
+                Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+                return \yii\bootstrap\ActiveForm::validate($model);
+            }
+            if($model->save()){
+                return $this->redirect(['view', 'id' => $model->shop_id]);
+            }
+
         } else {
             return $this->render('create', [
                 'model' => $model,
@@ -126,8 +139,16 @@ class ShopController extends CommonController
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->shop_id]);
+        if ($model->load(Yii::$app->request->post())) {
+
+            if (Yii::$app->request->isAjax) {
+                Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+                return \yii\bootstrap\ActiveForm::validate($model);
+            }
+            if($model->save()){
+                return $this->redirect(['view', 'id' => $model->shop_id]);
+            }
+
         } else {
             return $this->render('update', [
                 'model' => $model,

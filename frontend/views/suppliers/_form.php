@@ -18,17 +18,21 @@ if(!empty($user)){
     $user_row[''] = '请选择';
     foreach($user as $value){
         if($value['type']==2){
-            $user_row[$value['user_id']] = $value['username'];
+            $user_row[$value['real_name']] = $value['real_name'];
         }
     }
 }
 
 $country_row = array('' => '请选择','中国大陆' => '中国大陆','香港' => '香港','澳门' => '澳门','台湾' => '台湾','韩国' => '韩国','日本' => '日本','美国' => '美国','加拿大' => '加拿大','英国' => '英国','新加坡' => '新加坡','马来西亚' => '马来西亚','泰国' => '泰国','越南' => '越南','菲律宾' => '菲律宾','印度尼西亚' => '印度尼西亚','意大利' => '意大利','俄罗斯' => '俄罗斯','新西兰' => '新西兰','荷兰' => '荷兰','瑞典' => '瑞典','澳大利亚' => '澳大利亚','乌克兰' => '乌克兰','法国' => '法国','德国' => '德国','其他' => '其他');
 ?>
-<?php $form = ActiveForm::begin(); ?>
+<?php $form = ActiveForm::begin([
+    'id' => 'form-suppliers',
+    'enableAjaxValidation' => true,
+    'enableClientValidation' => true,
+]); ?>
 <?php if(!empty($model->isNewRecord)){?>
     <?= Html::activeHiddenInput($model,'add_user_id',['value'=>$userinfo['user_id']])?><!--创建人id-->
-    <?= Html::activeHiddenInput($model,'add_user_name',['value'=>$userinfo['username']])?>
+    <?= Html::activeHiddenInput($model,'add_user_name',['value'=>$userinfo['real_name']])?>
     <?= Html::activeHiddenInput($model,'store_id',['value'=>$userinfo['store_id']])?><!--入驻商家id-->
     <?= Html::activeHiddenInput($model,'store_name',['value'=>$userinfo['store_name']])?>
     <?= Html::activeHiddenInput($model,'create_time',['value'=>time()])?>
@@ -86,7 +90,7 @@ $country_row = array('' => '请选择','中国大陆' => '中国大陆','香港'
 </div>
 <div class="orders-new clearfix">
     <p>顺序:</p>
-    <?= $form->field($model, 'sort')->textInput(['value'=>999])->label(false)->hint('<label>* </label>') ?>
+    <?= $form->field($model, 'sort')->textInput(['value'=>($model->sort>0)?$model->sort:999])->label(false)->hint('<label>* </label>') ?>
 </div>
 <div class="orders-new clearfix">
     <p class="orders-newt1">备注说明:</p>
@@ -95,7 +99,7 @@ $country_row = array('' => '请选择','中国大陆' => '中国大陆','香港'
 <div class="orders-newbut">
     <?= Html::submitButton( '保存',  ['class' =>'orders-edbut']) ?>
     <a href="<?=Url::to(['suppliers/index'])?>">
-        <button class="orders-newbut2" type="button">返回</button>
+        <span class="orders-newbut2">返回</span>
     </a>
 </div>
 <?php ActiveForm::end(); ?>

@@ -46,24 +46,24 @@ $this->registerJsFile('@web/statics/js/js_global/global.js',['depends'=>['yii\we
         <p class="orders-lookt1">保质期:</p>
         <p class="orders-lookt2"><?php echo $model->shelf_life?$model->shelf_life.'天':''?></p>
     </div> <div class="orders-look clearfix">
-        <p class="orders-lookt1">主要成分:</p>
-        <p class="orders-lookt2"><?php echo $model->element?></p>
+        <p class="orders-lookt3">主要成分:</p>
+        <p class="orders-lookt4"><?php echo $model->element?></p>
     </div>
     <div class="orders-look clearfix">
-        <p class="orders-lookt1">功效:</p>
-        <p class="orders-lookt2"><?php echo $model->virtue?></p>
+        <p class="orders-lookt3">功效:</p>
+        <p class="orders-lookt4"><?php echo $model->virtue?></p>
     </div>
     <div class="orders-look clearfix">
-        <p class="orders-lookt1">适用人群:</p>
-        <p class="orders-lookt2"><?php echo $model->painter?></p>
+        <p class="orders-lookt3">适用人群:</p>
+        <p class="orders-lookt4"><?php echo $model->painter?></p>
     </div>
     <div class="orders-look clearfix">
-        <p class="orders-lookt1">服用方法:</p>
-        <p class="orders-lookt2"><?php echo $model->suggest?></p>
+        <p class="orders-lookt3">服用方法:</p>
+        <p class="orders-lookt4"><?php echo $model->suggest?></p>
     </div>
     <div class="orders-look clearfix">
-        <p class="orders-lookt1">储存方法:</p>
-        <p class="orders-lookt2"><?php echo $model->store_mode?></p>
+        <p class="orders-lookt3">储存方法:</p>
+        <p class="orders-lookt4"><?php echo $model->store_mode?></p>
     </div>
     <div class="orders-look clearfix">
         <p class="orders-lookt3">介绍:</p>

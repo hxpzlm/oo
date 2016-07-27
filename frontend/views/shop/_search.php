@@ -6,6 +6,8 @@ use yii\widgets\ActiveForm;
 /* @var $this yii\web\View */
 /* @var $model frontend\models\SuppliersSearch */
 /* @var $form yii\widgets\ActiveForm */
+
+$name = Yii::$app->request->get('ShopSearch');
 ?>
 
 <?php $form = ActiveForm::begin([
@@ -13,7 +15,7 @@ use yii\widgets\ActiveForm;
     'method' => 'get',
 ]); ?>
 
-<?= Html::activeInput('text',$model,'name',['placeholder' => '请直接选择或输入选择平台名称'])?>
+<div class="close_btn"><?= Html::activeInput('text',$model,'name',['placeholder' => '请直接选择或输入选择平台名称','value'=>$name['name']])?><img src="statics/img/close_icon.jpg" class="img_css"></div>
 
 <?= Html::submitButton('<i class="iconfont">&#xe60d;</i>搜索') ?>
 

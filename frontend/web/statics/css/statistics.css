@@ -1,0 +1,222 @@
+.inx .navboxs{display: block;}
+
+/*主体部分内容*/
+.stati_mian{
+	width: 100%;
+}
+
+.seeks-box{
+	/*display: block;*/
+}
+
+.seeks-boxs p{
+	width: 80px;
+}
+
+.seeks-boxs input.start_rl,
+.seeks-boxs input.end_rl{
+	width: 120px;
+}
+
+.seeks-boxs{
+	margin-right: 15px;
+}
+
+/*中间内容部分*/
+.cengar_cnt{
+	width: 100%;
+	background: #FFFFFF;
+}
+
+.one_cr{
+	width: 100%;
+	margin: 15px auto 40px;
+}
+
+.cengar_cnt h2{
+	width: 100%;
+	text-align: center;
+}
+
+.tp_del{
+	width: 415px;
+	height: 287px;
+	display: block;
+	margin: 0 auto;
+}
+
+.table{
+	width: 98%;
+	margin: 0 auto;
+	border: 1px solid #CCCCCC;
+	border-bottom: none;
+}
+
+.table th{
+	width: 33.33%;
+	height: 35px;
+	line-height: 35px;
+	text-align: center;
+	background: #e4e4e4;
+	border-bottom: 1px solid #CCCCCC;
+}
+
+.table tbody tr{
+	background: #FFFFFF;
+	font-size: 12px;
+}
+
+.table tbody tr:nth-child(even){
+	background: #F2F2F2;
+}
+
+.table td{
+	width: 33.33%;
+	height: 35px;
+	line-height: 35px;
+	font-size: 12px;
+	text-align: center;
+	border-bottom: 1px solid #CCCCCC;	
+}
+
+/*进销存明细统计 页面*/
+/*左侧核心内容*/
+.cen_mian{
+	width: 100%;
+	min-width: 1400px;
+}
+
+.table_left{
+	width:30%;
+	float:left;
+	text-align:center;
+	border: 1px solid #CCCCCC;
+	border-right: none;
+}
+
+.table_left thead tr{
+	background: #d9d9d9;
+	height: 70px;
+	line-height: 70px;
+}
+
+.table_left tr td,
+.table_left tr th{
+	border-right: 1px solid #CCCCCC;
+}
+
+tbody{
+	font-size: 12px;
+}
+
+.table_left tbody tr{
+	border-bottom: 1px solid #CCCCCC;
+}
+
+.table_left tbody td{
+	height: 35px;
+	line-height: 35px;
+	border-bottom: 1px solid #CCCCCC;
+	border-right: 1px solid #CCCCCC;
+}
+
+
+/*右侧表格样式*/
+.f_fd{
+	width: 70%;
+	float: left;
+	overflow-x: auto;
+}
+
+.table_right{
+	width: 400%;
+	border: 1px solid #CCCCCC;
+	border-left: none;
+}
+
+.table_right thead tr{
+	height: 34px;
+	border-bottom: 1px solid #CCCCCC;
+	background: #d9d9d9;
+}
+
+.table_right thead tr th.tt_width{
+	width: 70%;
+}
+
+.table_right thead tr th{
+	border-bottom: 1px solid #CCCCCC;
+	border-right: 1px solid #CCCCCC;
+	height: 34px;
+	overflow: hidden;
+}
+
+.title_names{
+	text-align: center;
+}
+
+.table_right thead tr.jh_width th{
+	width: auto;
+	overflow: hidden;
+}
+
+.table_right tbody tr{
+	height: 35px;
+	line-height: 35px;
+	
+}
+
+.table_right tbody tr td{
+	text-align: center;
+	border-right: 1px solid #CCCCCC;
+	border-bottom: 1px solid #CCCCCC;
+}
+
+.table_right tbody tr:nth-child(even),
+.table_left tbody tr:nth-child(even){
+	background: #f2f2f2;
+}
+
+/*销售平台业务总计页面*/
+/*占位符部分*/
+.nr_left{
+	width: 50%;
+	float: left;
+	margin-bottom: 20px;
+}
+
+/*统计表部分*/
+.table_b{
+	width: 98%;
+	margin: 0 auto;
+	border: 1px solid #CCCCCC;
+	border-bottom: none;
+}
+
+.table_b thead tr{
+	background: #e4e4e4;
+}
+
+.table_b thead tr th,
+.table_b tbody tr td{
+	border-bottom: 1px solid #CCCCCC;
+}
+
+.table_b tbody tr:nth-child(even){
+	background: #f2f2f2;
+}
+
+.table_b th,
+.table_b td{
+	width: 12.5%;
+	height: 35px;
+	text-align: center;
+}
+
+.p_centent{
+	width: 98%;
+	margin: 0 auto;
+	color: #333333;
+	padding: 3px 0;
+	text-align: left;
+}

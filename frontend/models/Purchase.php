@@ -45,9 +45,10 @@ class Purchase extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['store_id', 'warehouse_id', 'create_time', 'add_user_id'], 'integer'],
+            [['store_id', 'warehouse_id', 'create_time', 'add_user_id'], 'integer', 'message'=>'必须为数字'],
             [['warehouse_id'], 'required','message'=>'请选择入库仓库'],
             [['totle_price'], 'required','message'=>'总价不能为空'],
+            [['totle_price'], 'number','message'=>'总价必须为数字'],
             [['invalid_time'], 'required','message'=>'请选择失效日期'],
             [['batch_num'], 'required','message'=>'批号不能为空'],
             [['buy_time'], 'required','message'=>'请选择采购日期'],
@@ -87,5 +88,9 @@ class Purchase extends \yii\db\ActiveRecord
 
     public static function getGoodsCat($goods_id){
          return Goods::findOne($goods_id);
+    }
+
+    public function getPgoods(){
+        return $this->hasMany(PurchaseGoods::className(), ['purchase_id' => 'purchase_id']);
     }
 }

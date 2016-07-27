@@ -37,10 +37,9 @@ $this->registerCssFile('@web/statics/css/purchaseOrders-new.css',['depends'=>['y
         <p>顺序:</p>
         <?php echo $form->field($model,'sort')->textInput(['value'=>'999'])->label(false)->hint("<label>*请填写顺序</label>")?>
     </div>
-    <div class="orders-new clearfix">
-        <p class="orders-newt1">备注说明:</p>
-        <?= Html::activetextarea($model,'remark',['class'=>'orders-newt2'])?>
-        <span id="no_textarea"></span>
+    <div class="orders-new clearfix" style="clear: both;">
+        <p>备注说明:</p>
+        <?=$form->field($model,'remark')->textarea(['class'=>'orders-newt2','style'=>'float:left;'])->label(false)->hint('<label></label>')?>
     </div>
     <?=Html::activeInput('hidden',$model,'add_user_id',['value'=>yii::$app->user->identity->id])?>
     <?=Html::activeInput('hidden',$model,'add_user_name',['value'=>yii::$app->user->identity->username])?>
@@ -48,7 +47,7 @@ $this->registerCssFile('@web/statics/css/purchaseOrders-new.css',['depends'=>['y
     <div class="orders-newbut">
             <?= Html::submitButton('保存', ['class' => 'boxlf-but', 'name' => 'login-button']) ?>
         <a href="<?=Url::to(['store/index'])?>">
-            <button class="orders-newbut2" type="button">返回</button>
+            <span class="orders-newbut2">返回</span>
         </a>
     </div>
     <?php ActiveForm::end();?>

@@ -47,7 +47,7 @@ $this->registerJsFile('@web/statics/js/js_global/global.js',['depends'=>['yii\we
 	<div class="orders-edbut">
 		<?=Html::submitButton(Yii::t('app','保存'))?>
 		<a href="<?=Url::to(['warehouse/index'])?>">
-			<button class="orders-edbut2" type="button">返回</button>
+			<span class="orders-edbut2">返回</span>
 		</a>
 	</div>
     <?php ActiveForm::end();?>

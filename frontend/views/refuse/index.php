@@ -18,6 +18,7 @@ $this->registerJs("!function(){
 $this->title = '退货入库';
 $this->params['breadcrumbs'][] = $this->title;
 $order = \frontend\components\Search::SearchOrder();
+$goods_list = \frontend\components\Search::SearchGoods();
 ?>
 <div class="container">
     <?php echo $this->render('_search', ['model' => $searchModel]); ?>
@@ -25,6 +26,7 @@ $order = \frontend\components\Search::SearchOrder();
         <tr>
             <th>销售平台</th>
             <th>订单编号</th>
+			<th>客户姓名</th>
             <th>商品中英文名称（含规格）</th>
             <th>退货数量</th>
             <th>入库批次</th>
@@ -37,31 +39,43 @@ $order = \frontend\components\Search::SearchOrder();
         </tr>
         <tr>
             <?php foreach($dataProvider as $item){?>
-            <td class="table-tdw"><?=$item['shop_name']?></td>
-            <td><?=$item['order_no']?></td>
-            <?php foreach($goods[$item['refuse_id']] as $v){?>
-                <td class="table-tdw"><?=$v['goods_name']?>&nbsp;&nbsp;<?=$v['spec']?></td>
-                <td><?=$v['number']?></td>
-                <td><?=empty($v['sbatch_num'])?"无":$v['sbatch_num']?></td>
-            <?php } ?>
-            <td><?=$item['refuse_amount']?></td>
-            <td><?=date('Y-m-d',$item['refuse_time'])?></td>
-            <td><?=$item['warehouse_name']?></td>
-            <td class="returns-va1"><?=($item['status']==1)? "是":"否";?></td>
-            <td class="returns-va2"><?=($item['confirm_time']>0)?date('Y-m-d',$item['confirm_time']):"";?></td>
-            <td>
+            <td width="5%" class="table-left">&nbsp;<?=$item['shop_name']?></td>
+            <td width="8%"><?=$item['order_no']?></td>
+			<td width="6%"><?=$item['real_name']?></td>
+           <td class="table-left">
+		   <?php foreach($goods[$item['refuse_id']] as $v){?>
+		  <?=$v['goods_name']?>&nbsp;&nbsp;<?=$v['spec']?><br/>
+			<?php } ?>
+		   </td>
+           <td width="5%">
+				<?php foreach($goods[$item['refuse_id']] as $v){?>
+				<?=$v['number']>0? $v['number']:'　' ?><?=$v['unit_name']?><br/>
+				<?php } ?>
+		   </td>
+           <td width="7%">
+		   <?php foreach($goods[$item['refuse_id']] as $v){?>
+		   <?=empty($v['sbatch_num'])?"　":$v['sbatch_num']?><br/>
+		   <?php } ?>
+		   </td>
+            
+            <td width="7%" class="table-right"><?=$item['refuse_amount']?>元</td>
+            <td width="7%"><?=$item['refuse_time']>0 ? date('Y-m-d',$item['refuse_time']):"　"?></td>
+            <td width="5%"><?=$item['warehouse_name']?></td>
+            <td width="5%"><?=($item['status']==1)? "是":"否";?></td>
+            <td width="7%"><?=($item['confirm_time']>0)?date('Y-m-d',$item['confirm_time']):"　";?></td>
+            <td width="5%">
                 <?php if(Yii::$app->authManager->checkAccess(Yii::$app->user->id,'refuse/handle')){?>
-                <div class="returns-af"><i class="iconfont returns-afs icon-queren" title="<?=($item['status']==1)?"取消确认入库":"确认入库";?>"></i>
+                <div class="returns-af"><i class="iconfont returns-afs icon-<?if($item['status']==1){?>quxiao<?php }else{ ?>queren<?php } ?>" title="<?=($item['status']==1)?"取消确认入库":"确认入库";?>"></i>
                     <!--确认弹窗-->
                     <div class="returns-box">
-                        <p class="returns-boxt1"><i class="iconfont">&#xe608;</i></p>
                         <?php if($item['status']==0) {?>
+						<p class="returns-boxt1"><i class="iconfont">&#xe608;</i></p>
                         <p class="returns-boxt2">退货商品是否归入批号，如果归入批号请选择</p>
                         <?=Html::beginForm(Url::to(['refuse/handle','refuse_id'=>$item['refuse_id']]),'post',['id'=>'form'])?>
                         <?php foreach($goods[$item['refuse_id']] as $v){?>
                             <div class="returns-boxt3 clearfix">
                                 <p ><?=$v['goods_name']?>&nbsp;&nbsp;<?=$v['spec']?></p>
-                                <input type="text" class="batch_num" id="batch_num" name="batch_num[]" value=""/>
+                                <input type="text" class="batch_num" id="batch_num" name="batch_num[]" value="<?=$v['batch_num']?>" autocomplete="off"/>
                                 <input type="hidden" name="refuse_id" value="<?=$v['refuse_id']?>">
                                 <input type="hidden" name="goods_id[]" value="<?=$v['goods_id']?>">
                                 <input type="hidden" name="warehouse_id" value="<?=$item['warehouse_id']?>">
@@ -75,6 +89,7 @@ $order = \frontend\components\Search::SearchOrder();
                         </div>
                        <?=Html::endForm()?>
                         <?php }elseif($item['status']==1){?>
+							<p class="returns-boxt1"><i class="iconfont">&#xe608;</i></p>
                             <p class="returns-boxt2">取消退货入库操作？</p>
                             <div class="returns-boxt3 clearfix"></div>
                             <div class="returns-but">
@@ -86,7 +101,7 @@ $order = \frontend\components\Search::SearchOrder();
                 </div>
                 <?php }?>
                 <?php if(Yii::$app->authManager->checkAccess(Yii::$app->user->id,'refuse/view')){?>
-                <a href="<?=Url::to(['refuse-order/view','id'=>$item['refuse_id']])?>" data-method="post"><i class="iconfont">&#xe60b;</i></a>
+                <a href="<?=Url::to(['refuse/view','id'=>$item['refuse_id']])?>" data-method="post"><i class="iconfont">&#xe60b;</i></a>
                <?php }?>
             </td>
         </tr>
@@ -100,7 +115,7 @@ $order = \frontend\components\Search::SearchOrder();
     <script>
         $(function(){
             $('.returns-but1').click(function(){
-                $('#form').submit();
+                $(this).parent().parent('#form').submit();
             });
             //订单编号数据过滤
             $("input[name='order_no']").bigAutocomplete({
@@ -109,23 +124,28 @@ $order = \frontend\components\Search::SearchOrder();
                     {title:"<?=$v['order_no']?>"},
                     <?php }?>
                 ],
+                callback:function(data){
+                    $(".close_btn img").show();
+                    $(".close_btn img").click(function(){
+                        $("input[name='order_no']").val('');
+                        $(this).hide();
+                    })
+                }
+            });
+            //商品名称过滤
+            $("input[name='goods_name']").bigAutocomplete({
+                width:510,data:[
+                    <?php foreach($goods_list as $v){?>
+                    {title:"<?=$v['name']?>"},
+                    <?php }?>
+                ]
             });
             $('.batch_num').each(function(){
-               $(this).focus(function(){
                    var goods_id = $(this).siblings('input[name="goods_id[]"]').val();
                    var ware= $(this).siblings('input[name="warehouse_id"]').val();
                    $(this).bigAutocomplete({
                        width:149,url:'<?=Url::to(['reset/search'])?>&goods_id='+goods_id+'&warehouse_id='+ware,
                    });
-               });
-
-                $(this).keyup(function(){
-                    var goods_id = $(this).siblings('input[name="goods_id[]"]').val();
-                    var ware= $(this).siblings('input[name="warehouse_id"]').val();
-                    $(this).bigAutocomplete({
-                        width:149,url:'<?=Url::to(['reset/search'])?>&goods_id='+goods_id+'&warehouse_id='+ware,
-                    });
-                });
             });
         });
     </script>

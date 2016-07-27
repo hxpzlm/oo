@@ -15,6 +15,8 @@ return [
         'user' => [
             'identityClass' => 'common\models\User',
             'enableAutoLogin' => true,
+			'autoRenewCookie' => true,
+			'authTimeout' => 3600,
         ],
         'authManager' => [
             'class' => 'yii\rbac\DbManager',

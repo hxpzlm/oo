@@ -13,7 +13,7 @@ use yii\widgets\ActiveForm;
         'action' => ['index'],
         'method' => 'get',
     ]); ?>
-    <input type="text" name="name" placeholder ="请输入品牌名称">
+    <div class="close_btn"><input type="text" name="name" placeholder ="请输入品牌名称"><img src="statics/img/close_icon.jpg" class="img_css"></div>
     <div class="form-group">
 
         <?= Html::submitButton('<i class="iconfont">&#xe60d;</i>搜索') ?>

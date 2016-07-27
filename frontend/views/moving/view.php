@@ -70,7 +70,7 @@ $this->registerCssFile('@web/statics/css/purchaseOrders-look.css',['depends'=>['
     </div>
     <div class="orders-look clearfix">
         <p class="orders-lookt1">入库时间:</p>
-        <p class="orders-lookt2"><?=date('Y-m-d',$model->confirm_time)?></p>
+        <p class="orders-lookt2"><?=$model->confirm_time>0?date('Y-m-d',$model->confirm_time):''?></p>
     </div>
     <div class="orders-lookbut">
         <a href="<?=Url::to(['moving/index'])?>">

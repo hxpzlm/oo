@@ -58,33 +58,29 @@ $this->registerCssFile('@web/statics/css/purchaseOrders-look.css',['depends'=>['
     </div>
     <h4 class="orders-newtade">收货信息</h4>
     <div class="orders-look clearfix">
-        <p class="orders-lookt1">收货人信息:</p>
-        <p style="width: 70%; line-height: 32px; float: left;">
+        <p class="orders-lookt3">收货人信息:</p>
+        <div class="goodsReceipt">
+
             <table cellspacing="0" cellpadding="0" border="0" width="70%">
             <?php
-            $res = (new \yii\db\Query())->from(Yii::$app->getDb()->tablePrefix.'address')->where('customers_id='.$model->customers_id)->all();
+            $res = (new \yii\db\Query())->from(Yii::$app->getDb()->tablePrefix.'address')->where('customers_id='.$model->customers_id)->orderBy(['create_time'=>SORT_ASC])->all();
             foreach($res as $row){
             if($row['is_idcard']==1) {
                $checked = 'checked';
             }else{
                $checked = '';
             }
-            echo '<tr><td width="15%" height="32px">'.$row['accept_name'].'</td><td width="15%">'.$row['accept_mobile'].'</td><td width="30%">'.$row['accept_address'].'</td><td>'.$row['zcode'].'</td><td width="20%">'.$row['accept_idcard'].'</td><td width="20%"><input type="checkbox" name="Address[is_idcard][]" '.$checked.' value="'.$row['is_idcard'].'" />已上传身份证</td></tr>';
+            echo '<tr><td height="32px">'.$row['accept_name'].'</td><td>'.$row['accept_mobile'].'</td><td>'.$row['accept_address'].'</td><td>'.$row['zcode'].'</td><td>'.$row['accept_idcard'].'</td><td><input type="checkbox" name="Address[is_idcard][]" '.$checked.' value="'.$row['is_idcard'].'" />已上传身份证</td></tr>';
             }
             ?>
             </table>
-        </p>
-        <div class="clear"></div>
+
+            </div>
     </div>
     <h4 class="orders-newtade">系统信息</h4>
     <div class="orders-look clearfix">
         <p class="orders-lookt1">创建人:</p>
-        <p class="orders-lookt2">
-            <?php
-            $item = (new \yii\db\Query())->select('username')->from(Yii::$app->getDb()->tablePrefix.'user')->where('user_id='.$model->add_user_id)->one();
-            echo $item['username'];
-            ?>
-        </p>
+        <p class="orders-lookt2"><?=$model->add_user_name?></p>
     </div>
     <div class="orders-look clearfix">
         <p class="orders-lookt1">创建时间:</p>

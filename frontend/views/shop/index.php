@@ -37,19 +37,13 @@ $shop = \frontend\components\Search::SearchShop();
         </tr>
         <?php foreach($dataProvider as $item){ ?>
             <tr>
-                <td><input type="text" name="sort[<?=$item['shop_id']?>]" value="<?=$item['sort']?>"></td>
-                <td><?= $item['name']; ?> </td>
-                <td><?= $item['status']==1 ? '正常' : '停用'?></td>
-                <td width="60%"><?= $item['remark']; ?></td>
-                <td>
+                <td width="8%" class="table-left">&nbsp;<input type="text" name="sort[<?=$item['shop_id']?>]" value="<?=$item['sort']?>"></td>
+                <td width="10%"><?= $item['name']; ?> </td>
+                <td width="7%"><?= $item['status']==1 ? '正常' : '停用'?></td>
+                <td class="table-left"><?= $item['remark']; ?></td>
+                <td width="5%">
                     <?php if(Yii::$app->authManager->checkAccess(Yii::$app->user->identity->id,'shop/delete')){?>
-                        <?= Html::a('<i class="iconfont">&#xe605;</i>', ['delete', 'id' => $item['shop_id']], [
-                            'class' => 'orders-infosc',
-                            'data' => [
-                                'confirm' => '您确定要删除这条记录吗？删除后不可恢复！',
-                                'method' => 'post',
-                            ],
-                        ]) ?>
+                        <a class="orders-infosc" href="javascript:;" nctype="<?=$item['shop_id']?>"><i class="iconfont">&#xe605;</i></a>
                     <?php }?>
                     <?php if(Yii::$app->authManager->checkAccess(Yii::$app->user->identity->id,'shop/update')){?>
                         <a href="<?=Url::to(['shop/update','id' => $item['shop_id']])?>"><i class="iconfont">&#xe603;</i></a>
@@ -68,15 +62,14 @@ $shop = \frontend\components\Search::SearchShop();
     ]);;?>
 </div>
 
-<!--删除弹窗-->
-<!--<div class="orders-sc">
-	<p class="orders-sct1 clearfix">删除<i class="iconfont">&#xe608;</i></p>
-	<p class="orders-sct2">您确定要删除这条记录吗？删除后不可恢复！</p>
-	<div class="orders-sct3">
-		<span>删除</span>
-		<span class="orders-sct3qx">取消</span>
-	</div>
-</div>-->
+    <div class="orders-sc">
+        <p class="orders-sct1 clearfix">删除<i class="iconfont">&#xe608;</i></p>
+        <p class="orders-sct2">您确定要删除这条记录吗？删除后不可恢复！</p>
+        <div class="orders-sct3">
+            <a href="" data-method="post"><span class="orders-sct3qx" style="cursor: pointer">确定</span></a>
+            <span style="cursor: pointer">取消</span>
+        </div>
+    </div>
 <?php \frontend\components\JsBlock::begin()?>
     <script>
         $(function(){
@@ -95,7 +88,24 @@ $shop = \frontend\components\Search::SearchShop();
                     <?php foreach($shop as $v){?>
                     {title:"<?=$v['name']?>"},
                     <?php }?>
-                ]
+                ],
+                callback:function(data){
+                    $(".close_btn img").show();
+                    $(".close_btn img").click(function(){
+                        $("input[name='ShopSearch[name]']").val('');
+                        $(this).hide();
+                    })
+                }
+            });
+            //删除
+            var sc;
+            $('.orders-infosc').click(function(){
+                var id = $(this).attr('nctype');
+                $('.orders-sct3>a').attr('href','<?=Url::to(['shop/delete'])?>&id='+id);
+                sc = $(".orders-sc").bPopup();
+            })
+            $(".orders-sct1 i,.orders-sct3 span").click(function(){
+                sc.close();
             });
         });
     </script>

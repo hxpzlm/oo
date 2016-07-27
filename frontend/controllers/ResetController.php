@@ -12,6 +12,7 @@ use frontend\models\StocksModel;
 use Yii;
 use frontend\models\PasswordResetRequestForm;
 use frontend\models\ResetPasswordForm;
+use frontend\models\OrderGoods;
 use yii\base\InvalidParamException;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
@@ -112,10 +113,12 @@ class ResetController extends Controller{
         if(Yii::$app->request->isPost){
             $code = Yii::$app->request->post('phoneVerificationCode');
             $sms = Yii::$app->session->get('smsCode');
-            if($code==$sms){
+            if($code==$sms && $code!=''){
                 $user = User::findByUsername($username);
                 return $this->redirect(['pwd','token'=>$user['password_reset_token']]);
-            }
+            }else{
+				Yii::$app->session->setFlash('error', '验证码输入不正确');
+			}
         }
         $this->layout = "login_layout";
         return $this->render('sms',['mobile'=>$mobile]);
@@ -127,7 +130,9 @@ class ResetController extends Controller{
             $mobile = Yii::$app->request->post('mobile');
             $obj = new HuyiSms();
             Yii::$app->response->format= Response::FORMAT_JSON;
-            return $obj->send($mobile);
+            $mobile_code = $obj::random(6,1);
+            $content="您的验证码是：".$mobile_code."。请不要把验证码泄露给其他人。";
+            return $obj->send($mobile,$content,$mobile_code);
         }
     }
 	
@@ -139,7 +144,6 @@ class ResetController extends Controller{
 			 }else{
 				 $data= ['status'=>0];
 			 }
-			 
 			 Yii::$app->response->format= Response::FORMAT_JSON;
 			 
 			 return $data;
@@ -190,7 +194,22 @@ class ResetController extends Controller{
             return $stocks;
         }
     }
-
+	
+	public  function actionVlipwd()
+    {
+        if(Yii::$app->request->isAjax) {
+			$id = Yii::$app->user->id;
+			$user = new User();
+			$userInfo = $user->findIdentity($id);
+            $pwd = Yii::$app->request->post('pwd');
+			if(!$userInfo->validatePassword($pwd)){
+               $data = array('status'=>0);  
+            }
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return $data;
+        }
+    }
+	
 }
 
 

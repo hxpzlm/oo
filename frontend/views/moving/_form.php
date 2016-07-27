@@ -31,9 +31,6 @@ if(!empty($warehose)){
         $warehose_row[$value['warehouse_id']] = $value['name'];
     }
 }
-
-$good_list = \frontend\components\Search::SearchGoods();
-$purchase_list = \frontend\components\Search::SearchPurchase();
 ?>
 <?php $form = ActiveForm::begin(); ?>
 <?php if($model->isNewRecord){?>
@@ -41,7 +38,7 @@ $purchase_list = \frontend\components\Search::SearchPurchase();
     <?= Html::activeHiddenInput($model,'store_name',['value'=>$userinfo['store_name']])?>
     <?= Html::activeHiddenInput($model,'create_time',['value'=>time()])?><!--创建时间-->
     <?= Html::activeHiddenInput($model,'add_user_id',['value'=>$userinfo['user_id']])?><!--创建人id-->
-    <?= Html::activeHiddenInput($model,'add_user_name',['value'=>$userinfo['username']])?>
+    <?= Html::activeHiddenInput($model,'add_user_name',['value'=>$userinfo['real_name']])?>
 <?php }?>
     <h4 class="orders-newtade">仓库信息</h4>
     <div class="orders-new clearfix">
@@ -67,6 +64,7 @@ $purchase_list = \frontend\components\Search::SearchPurchase();
         <p>商品中英文名称:</p>
         <?=$form->field($model, 'goods_name')->textInput()->label(false)->hint('<label>* 在此输入会自动过滤商品。选择商品后下面的商品信息会自动填写</label>')?>
         <?= Html::activeHiddenInput($model,'goods_id')?>
+        <span id="g_name" style="color: red; margin: 0; font-weight: bold;"></span>
     </div>
     <div class="orders-new clearfix">
         <p>品牌:</p>
@@ -88,17 +86,19 @@ $purchase_list = \frontend\components\Search::SearchPurchase();
     </div>
     <div class="orders-new clearfix">
         <p>批号:</p>
-        <?=$form->field($model, 'batch_num')->textInput(['autocomplete'=>'off'])->label(false)->hint('<label>* 请选择商品的采购批号</label>')?>
+        <?=$form->field($model, 'batch_num')->textInput(['autocomplete'=>'off'])->label(false)->hint('<label></label>')?>
+        <span id="b_batchnum" style="color: red; margin: 0; font-weight: bold;"></span>
     </div>
 
     <h4 class="orders-newtade">调剂信息</h4>
     <div class="orders-new clearfix">
         <p>调剂数量:</p>
-        <?=$form->field($model, 'number')->textInput()->label(false)->hint('<label>* 请输入调剂商品的数量。</label>')?>
+        <?=$form->field($model, 'number')->textInput()->label(false)->hint('<label>* </label>')?>
+        <span id="tj_num" style="color: red; margin: 0; font-weight: bold;"></span>
     </div>
     <div class="orders-new clearfix">
         <p>调剂日期:</p>
-        <?=$form->field($model, 'update_time')->textInput(['value'=>$model->update_time>0?date('Y-m-d', $model->update_time):'','id'=>'ex-date','class'=>'laydate-icon'])->label(false)->hint('<label>*</label>')?>
+        <?=$form->field($model, 'update_time')->textInput(['value'=>$model->update_time>0?date('Y-m-d', $model->update_time):date('Y-m-d', time()),'id'=>'ex-date','class'=>'laydate-icon'])->label(false)->hint('<label>*</label>')?>
     </div>
     <div class="orders-new clearfix">
         <p>备注说明:</p>
@@ -107,41 +107,85 @@ $purchase_list = \frontend\components\Search::SearchPurchase();
     <div class="orders-newbut">
         <?= Html::submitButton('保存', ['class' =>'orders-edbut']) ?>
         <a href="<?=Url::to(['moving/index'])?>">
-            <button class="orders-newbut2" type="button">返回</button>
+            <span class="orders-newbut2">返回</span>
         </a>
     </div>
 <?php ActiveForm::end(); ?>
 <?php \frontend\components\JsBlock::begin()?>
     <script>
         $(function(){
+            $("input[name='Moving[goods_name]']").focusin(function(){
 
-            $("input[name='Moving[goods_name]']").bigAutocomplete({
-                width:510,
-                data:[
-                    <?php foreach($good_list as $v){?>
-                    {title:"<?=$v['name']?>",result:{brand_id:"<?=$v['brand_id']?>",brand_name:"<?=$v['brand_name']?>",spec:"<?=$v['spec']?>",unit_id:"<?=$v['unit_id']?>",unit_name:"<?=$v['unit_name']?>",barode_code:"<?=$v['barode_code']?>",goods_id:"<?=$v['goods_id']?>"}},
-                    <?php }?>
-                ],
-                callback:function(data){
-                    $("#moving-brand_id").val(data.result.brand_id);
-                    $("#moving-brand_name").val(data.result.brand_name);
-                    $("#moving-spec").val(data.result.spec);
-                    $("#moving-unit_id").val(data.result.unit_id);
-                    $("#moving-unit_name").val(data.result.unit_name);
-                    $("#moving-barode_code").val(data.result.barode_code);
-                    $("#moving-goods_id").val(data.result.goods_id);
+                from_warehouse_id = $('#moving-from_warehouse_id').val();
+                if(from_warehouse_id!=''){
+                    $("input[name='Moving[goods_name]']").bigAutocomplete({
+                        width:710,
+                        url:'<?=Url::to(['moving/index'])?>&action=f_goods&from_warehouse_id='+from_warehouse_id,
+                        callback:function(data){
+                            $("#moving-brand_id").val(data.result.brand_id);
+                            $("#moving-brand_name").val(data.result.brand_name);
+                            $("#moving-spec").val(data.result.spec);
+                            $("#moving-unit_id").val(data.result.unit_id);
+                            $("#moving-unit_name").val(data.result.unit_name);
+                            $("#moving-barode_code").val(data.result.barode_code);
+                            $("#moving-goods_id").val(data.result.goods_id);
+                        }
+                    });
+                }
+
+            });
+
+
+
+            $("input[name='Moving[goods_name]']").blur(function(){
+                var goods_name = $("input[name='Moving[goods_name]']").val();
+                if(goods_name!=''){
+                    $.post("<?=Url::to(['moving/index'])?>",{action:'gname',goods_name:goods_name},function(result){
+                        if(result==''){
+                            $("#g_name").text('商品中英文名称不存在');
+                            $('.orders-edbut').attr('disabled',true);
+                            return false;
+                        }else{
+                            $("#moving-brand_id").val(result.brand_id);
+                            $("#moving-brand_name").val(result.brand_name);
+                            $("#moving-spec").val(result.spec);
+                            $("#moving-unit_id").val(result.unit_id);
+                            $("#moving-unit_name").val(result.unit_name);
+                            $("#moving-barode_code").val(result.barode_code);
+                            $("#moving-goods_id").val(result.goods_id);
+
+                            $("#moving-batch_num").val('');
+
+                            $("#g_name").text('');
+                            $('.orders-edbut').attr('disabled',false);
+                        }
+                    },'json');
+                }else{
+                    $("#moving-brand_id").val('');
+                    $("#moving-brand_name").val('');
+                    $("#moving-spec").val('');
+                    $("#moving-unit_id").val('');
+                    $("#moving-unit_name").val('');
+                    $("#moving-barode_code").val('');
+                    $("#moving-goods_id").val('');
+                    //批次号
+                    $("#moving-batch_num").val('');
                 }
             });
 
             //根据仓库或商品中英文名过滤批号
             $("input[name='Moving[batch_num]']").focusin(function(){
-
-                var from_warehouse_id = $('#moving-from_warehouse_id').val();
+                from_warehouse_id = $('#moving-from_warehouse_id').val();
                 var goods_id = $('#moving-goods_id').val();
-
-                $(this).bigAutocomplete({
-                    width:500,url:'<?=Url::to(['moving/index'])?>&action=f_batch&from_warehouse_id='+from_warehouse_id+'&goods_id='+goods_id
-                });
+                if(goods_id!=''){
+                    $(this).bigAutocomplete({
+                        width:500,url:'<?=Url::to(['moving/index'])?>&action=f_batch&from_warehouse_id='+from_warehouse_id+'&goods_id='+goods_id,
+                        callback:function(data){
+                            $("#moving-batch_num").val(data.result.batch_num);
+                            $("#moving-batch_num").attr('rel', data.result.stock_num);
+                        }
+                    });
+                }
 
             });
 
@@ -166,6 +210,18 @@ $purchase_list = \frontend\components\Search::SearchPurchase();
                 }
             });
 
+
+            $("#moving-number").blur(function(){
+
+                if($.trim($(this).val()) > parseInt($("#moving-batch_num").attr('rel'))){
+                    $("#tj_num").html('<label class="red">调剂数量不能大于此批号库存数</label>');
+                    $('.orders-edbut').attr('disabled',true);
+                    return false;
+                }else{
+                    $("#tj_num").text('');
+                    $('.orders-edbut').attr('disabled',false);
+                }
+            });
 
             $(".orders-edbut").click(function(){
                 if($.trim($('#moving-from_warehouse_id').val()) == ''){

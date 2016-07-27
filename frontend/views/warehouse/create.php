@@ -40,7 +40,7 @@ $this->registerJsFile('@web/statics/js/js_global/global.js',['depends'=>['yii\we
     </div>
     <div class="orders-new clearfix">
         <p>顺序:</p>
-        <?php echo $form->field($model,'sort')->textInput(['value'=>'999'])->label(false)->hint("<label>*</label>");?>
+        <?php echo $form->field($model,'sort')->textInput(['value'=>999])->label(false)->hint("<label>*</label>");?>
     </div>
     <div class="orders-new clearfix">
         <p class="orders-newt1">备注说明:</p>
@@ -49,12 +49,12 @@ $this->registerJsFile('@web/statics/js/js_global/global.js',['depends'=>['yii\we
     <?=Html::activeInput('hidden',$model,'store_id',['value'=>yii::$app->user->identity->store_id])?>
     <?=Html::activeInput('hidden',$model,'store_name',['value'=>yii::$app->user->identity->store_name])?>
     <?=Html::activeInput('hidden',$model,'add_user_id',['value'=>yii::$app->user->identity->id])?>
-    <?=Html::activeInput('hidden',$model,'add_user_name',['value'=>yii::$app->user->identity->username])?>
+    <?=Html::activeInput('hidden',$model,'add_user_name',['value'=>yii::$app->user->identity->real_name])?>
     <?=Html::activeInput('hidden',$model,'create_time',['value'=>time()])?>
     <div class="orders-newbut">
         <?= Html::submitButton('保存', ['class' => 'boxlf-but', 'name' => 'login-button']) ?>
         <a href="<?=Url::to(['warehouse/index'])?>">
-            <button class="orders-newbut2" type="button">返回</button>
+            <span class="orders-newbut2">返回</span>
         </a>
     </div>
     <?php ActiveForm::end();?>

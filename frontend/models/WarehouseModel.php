@@ -7,8 +7,10 @@
  */
 namespace frontend\models;
 use Yii;
+
 class WarehouseModel extends \yii\db\ActiveRecord
 {
+
     /**
      * @inheritdoc
      */
@@ -33,7 +35,7 @@ class WarehouseModel extends \yii\db\ActiveRecord
             [['sort'],'required','message'=>'排序不能为空'],
             [['status'],'required','message'=>'请选择状态'],
             [['principal_id'], 'required','message'=>'负责人不能为空'],
-            [['name'], 'unique', 'message' => '名称已存在.'],
+            [['name'], 'unique', 'filter'=>['store_id'=>Yii::$app->user->identity->store_id], 'message' => '名称已存在.'],
         ];
     }
 

@@ -50,7 +50,7 @@ class Moving extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['store_id', 'goods_id', 'brand_id', 'unit_id', 'number', 'confirm_time', 'add_user_id', 'create_time', 'confirm_user_id', 'status'], 'integer'],
+            [['store_id', 'goods_id', 'brand_id', 'unit_id', 'number', 'confirm_time', 'add_user_id', 'create_time', 'confirm_user_id', 'status'], 'integer', 'message'=>'必须为数字'],
             [['remark'], 'string'],
             [['from_warehouse_name', 'to_warehouse_name', 'brand_name', 'barode_code', 'spec', 'add_user_name', 'confirm_user_name', 'unit_name'], 'string', 'max' => 32],
             [['store_name', 'goods_name'], 'string', 'max' => 255],

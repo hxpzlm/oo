@@ -40,7 +40,7 @@ class Brand extends \yii\db\ActiveRecord
             [['store_name'], 'string', 'max' => 32],
             [['add_user_name'], 'string', 'max' => 20],
             [['name'], 'required','message'=>'品牌名称不能为空'],
-            [['name'], 'unique', 'message' => '品牌名称已存在.'],
+            [['name'], 'unique', 'filter'=>['store_id'=>Yii::$app->user->identity->store_id], 'message' => '品牌名称已存在.'],
             [['name'], 'string', 'min' => 2, 'max' => 255],
             [['sort'], 'required','message'=>'顺序不能为空'],
             [['status'], 'required','message'=>'状态不能为空'],

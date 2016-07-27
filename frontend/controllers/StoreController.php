@@ -54,14 +54,13 @@ class StoreController extends CommonController
         if($store_id>0) $where['store_id']=$store_id;
         $tablePrefix=Yii::$app->getDb()->tablePrefix;
         $query=new \yii\db\query;
-        $query->select('store_id,sort,name,status,remark')->from($tablePrefix.'store')->where($where)->orderBy(['sort'=>SORT_ASC]);
+        $query->select('store_id,sort,name,status,remark')->from($tablePrefix.'store')->where($where)->orderBy(['sort'=>SORT_ASC,'create_time'=>SORT_DESC]);
         if(!empty($s_con['name'])) $query->andFilterWhere(['like','name',$s_con['name']]);
         $pagination = new Pagination([
-            'defaultPageSize' => 15,
+            'defaultPageSize' => 20,
             'totalCount' => $query->count(),
         ]);
-        $countries = $query->orderBy(['sort'=>SORT_ASC])
-            ->offset($pagination->offset)
+        $countries = $query->offset($pagination->offset)
             ->limit($pagination->limit)
             ->all();
 

@@ -1,0 +1,525 @@
+.orders-info th{
+	width: auto;
+}
+table.orders-info td.icon_1,table.orders-info i.icon_1{
+	font-size: 16px;
+	cursor: pointer;
+}
+/*2016/7/6新增*/
+
+/*库存盘点页面*/
+.window_1,.window_2,.window_3{
+	padding: 20px;
+	background: #fff;
+	position: fixed;
+	top: 30%;
+	left: 37.5%;
+	z-index: 9999;
+	box-sizing: border-box;
+	display: none;
+} 
+
+.window_1 p{
+	padding-top: 50px;
+	text-align: center;
+	background: #ffffff;
+	vertical-align: middle;
+}
+
+.window_1_p1,.window_3_p1{
+	width: 100%;
+	background: #ffffff;
+	vertical-align: middle;
+	float: left;
+	
+}
+
+.window_1_p1 span,.window_3_p1 span{
+	padding: 8px 5px;
+	float: left;
+}
+
+.window_1 p a{
+	color: #6699FF;
+	text-decoration: underline;
+}
+
+.window_1 p a:hover{
+	color: green;
+}
+
+.window_1_p2{
+	padding: 10px 0 20px 20px;
+	float: left;
+}
+
+.window_1_file{
+	padding: 5px;
+	box-sizing: border-box;
+	height: 25px;
+	opacity: 0;
+	filter:alpha(opacity=0);
+	position: absolute;
+	color: #333;
+	top: -3px;
+	left: -76px;
+	cursor: pointer;
+}
+
+.window_1_text{
+	width: 200px;
+	height: 23px;
+	margin: 70px 10px 30px 20px;
+	padding: 0 6px;
+	float: left;
+}
+
+.window_1 .button{
+	width: 100px;
+	height: 25px;
+	line-height: 25px;
+	margin: 50px 25px 20px ;
+	overflow: hidden;
+	text-align: center;
+	background: #ffffff;
+	border: 1px solid #666666;
+	border-radius: 5px;
+	float: left;
+	cursor: pointer;
+	position: relative;
+}
+
+.window_1 .button_1{
+	color: #333;
+	background: #ccc;
+}
+
+.window_2{
+	height: 200px;
+	padding: 20px;
+	box-sizing: border-box;
+}
+
+.window_2 img,.window_2 p{
+	height: 40px;
+	line-height: 35px;
+	margin: 60px 0 0 30px;
+	display: block;
+	float: left;
+}
+
+.window_3{
+	width: auto;
+}
+
+.window_3_p2{
+	line-height: 25px;
+	margin: 60px 20px 0;
+}
+
+.window_3_p3{
+	line-height: 25px;
+	margin: 0 25px 0 40px;
+}
+
+.window_3 button{
+	width: 100px;
+	height: 25px;
+	margin: 15px 230px 20px;
+	border-radius: 5px;
+	background: #ffffff;
+	border: 1px solid #666666;
+	cursor: pointer;
+}
+
+.icon{
+	padding: 5px;
+	font-size: 20px;
+	float: right;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+/*库存盘点跳转至查看页面*/
+.view{
+	width: 75%;
+	margin: 50px auto 0;
+	position: relative;
+	border: 1px solid #ccc;
+	border-bottom: none;
+}
+
+
+.view lable{
+	padding-left: 16%;
+}
+
+.view_lable2 span{
+	margin-right: 20px;
+}
+
+.title{
+	font-weight: bold;
+	text-align: center;
+	background: #f6f6f6;
+}
+
+.view ul{
+	height: auto;
+	max-height: 500px;
+	overflow: hidden;
+	overflow-y: auto;
+}
+
+.view p{
+	padding: 8px 0;
+}
+
+
+.view p{
+	border-bottom: 1px solid #ccc;
+}
+
+.view_p2{
+	background: #f6f6f6;
+}
+
+.view_p1 span{
+	margin-right: 10px;
+	padding: 8px 8px 8px 12%;
+}
+
+.return{
+	width: 100px;
+	height: 28px;
+	margin: 15px 40px ;
+	border-radius: 5px;
+	cursor: pointer;
+	border: 1px solid #666;
+	background: none;
+	float: right;
+	border: none;
+	border: 1px solid #aaaaaa;
+	color: #333333;
+	text-align: center;
+	line-height: 28px;
+}
+
+.return:hover{
+	color: #333333;
+	border: 1px solid #aaaaaa;
+}
+
+/*库存盘点跳转至新建页面*/
+	/*步骤一*/
+.main{
+	width: 1427px;
+	min-width: 1300px;
+	margin: 50px auto 0;
+}
+
+.step_1{
+	height: 47px;
+	background: url(../img/step_1.jpg) no-repeat;
+}
+
+.step span{
+	height: 47px;
+	line-height: 47px;
+	margin: 0 100px;
+}
+.step_1_1{
+	color: #fff;
+}
+
+.titile{
+	height: 30px;
+	line-height: 30px;
+	margin: 8px 0;
+	text-align: center;
+	font-weight: bold;
+	background: #F2F2F2;
+	
+}
+
+.main_l{
+	width: 20%;
+	float: left;
+}
+
+.main_l_1,.main_l_2{
+	width: 100%;
+	height: 30px;
+	margin-bottom: 8px;
+	background: #f2f2f2;
+}
+
+.main_l_1 p{
+	height: 30px;
+	line-height: 30px;
+	text-align: center;
+}
+
+.main_l_2{
+	height: 468px;
+}
+
+.main_l_2 p{
+	height: 468px;
+	line-height: 468px;
+	text-align: center;
+}
+
+.main_r{
+	width: 80%;
+	float: left;
+}
+
+.r_select1{
+	width: 80%;
+	height: 30px;
+	margin: 0 0 8px 1%;
+}
+
+.main_mid{
+	width: 36%;
+	margin: 0 0 8px 1%;
+	float: left;
+}
+
+.mid_product{
+	width: 100%;
+	height: 430px;
+	max-height: 430px;
+	box-sizing: border-box;
+	border: 1px solid #aaa;
+	overflow: hidden;
+	overflow-y: auto;
+	display: none;
+}
+
+.main li{
+	cursor: pointer;
+	padding: 5px 10px;
+	background-color: #fff;
+}
+
+.main li.select{
+	background: #CCCCCC;
+}
+
+.mid_product_1{
+	display: block;
+}
+
+.mid_select2{
+	width: 100%;
+	height: 30px;
+	margin-bottom: 8px;
+}
+
+.icon_rl{
+	width: 9%;
+	margin: 185px 0;
+	text-align: center;
+	float: left;
+}
+
+.icon_rl span{
+	padding: 3px 22px;
+	border: 1px solid #aaa;
+	font-size: 14px;
+	border-radius: 5px;
+	cursor: pointer;
+}
+
+.r_product{
+	width: 35%;
+	height: 468px;
+	max-height: 468px;
+    overflow-y: auto;
+	box-sizing: border-box;
+	border: 1px solid #aaa;
+	float: left;
+	display: none;
+}
+
+.r_product li{
+	/*display: none;*/
+}
+
+.r_product_1{
+	display: block;
+}
+
+.button{
+	width: 150px;
+	height: 35px;
+	margin: 20px 0 0 50px;
+	float: right;
+	background: none;
+	border: 1px solid #aaa;
+	border-radius: 5px;
+	cursor: pointer;
+}
+.button1{
+	background: #ccc;
+}
+
+.tip_1,.tip_2{
+    color: #ccc;
+}
+
+.tip_2{
+    height: 468px;
+    line-height: 468px;
+    margin-left: 5px;
+}
+
+/*步骤二*/
+.table_box{
+    width: 1427px;
+    overflow-x: auto;
+    border: 1px solid #CCCCCC;
+    border-bottom: none;
+    background: #F2F2F2;
+}
+
+.checkbox{
+    width: auto;
+    height: 35px;
+    border-bottom: 1px solid #CCCCCC;
+}
+
+.table_box .checkbox:nth-child(odd){
+    background: #f2f2f2;
+}
+
+.table_box .checkbox:nth-child(even){
+    background: #FFFFFF;
+}
+
+.checkbox li{
+    width: 150px;
+    height: 35px;
+    line-height: 35px;
+    float: left;
+    padding: 0;
+    text-align: center;
+    background: none;
+}
+
+.checkbox li.first-child{
+    width: 300px;
+}
+
+/*.checkbox{
+	width: auto;
+	border-collapse: collapse;
+	border: 1px solid #ccc;
+	border-bottom: none;
+}
+
+.checkbox tr:nth-child(odd){
+	background: #f2f2f2;
+}
+
+.checkbox th,.checkbox td{
+	text-align: center;
+	border-bottom: 1px solid #ccc;
+	padding: 8px 0;
+	font-weight: 100;
+}
+
+.checkbox td{
+	width: 150px;
+}
+
+.checkbox td.first-child{
+	width: 300px;
+}*/
+
+.step_2{
+    background: url(../img/step_2.jpg) no-repeat;
+}
+
+.step_2_2{
+    color: #fff;
+}
+
+/*步骤三*/
+.step_3{
+    background: url(../img/step_3.jpg) no-repeat;
+}
+
+.step_3_3{
+    color: #fff;
+}
+
+.step_3_ul{
+    height: 460px;
+    max-height: 460px;
+    overflow: hidden;
+    overflow-y: auto;
+    border:  1px solid #ccc;
+    border-bottom: none;
+}
+
+.step_3_ul li{
+    padding: 0;
+}
+
+.step_3_ul p{
+    border-bottom: 1px solid #ccc;
+}
+
+.step_3_ul_p1{
+    padding: 8px 0 8px 50px;
+    background: #f2f2f2;
+}
+
+.step_3_ul_p2{
+    padding: 3px 0 3px 150px;
+    box-sizing: border-box;
+}
+
+.step_3_ul span{
+    padding-left: 50px;
+    text-align: right;
+}
+
+.step_3_ul_span1 input{
+    width: 100px;
+    font-size: 14px;
+    box-sizing: border-box;
+    padding: 5px 5px 4px;
+    border: none;
+    border: 1px solid #CCCCCC;
+}
+
+.zh_number{
+    width: 40px;
+    text-align: right;
+    border: none;
+    background: none;
+    font-size: 16px;
+    padding-left: 50px;
+    color: #333333;
+}
+
+.step_3_ul_span3{
+    width: 56%;
+    margin-right: 20px;
+    padding: 5px;
+    float: right;
+}
+
+
+/*2016/7/19新增*/
+.view{
+	font-size: 12px;
+}
+
+.title{
+	font-size: 14px;
+}

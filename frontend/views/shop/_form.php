@@ -12,10 +12,16 @@ use yii\widgets\ActiveForm;
 $user = new User();
 $userinfo = $user->findIdentity(Yii::$app->session['__id']);
 ?>
-<?php $form = ActiveForm::begin(); ?>
+<?php $form = ActiveForm::begin(
+    [
+        'id' => 'form-shop',
+        'enableAjaxValidation' => true,
+        'enableClientValidation' => true,
+    ]
+); ?>
 <?php if(!empty($model->isNewRecord)){?>
     <?= Html::activeHiddenInput($model,'add_user_id',['value'=>$userinfo['user_id']])?><!--创建人id-->
-    <?= Html::activeHiddenInput($model,'add_user_name',['value'=>$userinfo['username']])?>
+    <?= Html::activeHiddenInput($model,'add_user_name',['value'=>$userinfo['real_name']])?>
     <?= Html::activeHiddenInput($model,'store_id',['value'=>$userinfo['store_id']])?><!--入驻商家id-->
     <?= Html::activeHiddenInput($model,'store_name',['value'=>$userinfo['store_name']])?>
     <?= Html::activeHiddenInput($model,'create_time',['value'=>time()])?>
@@ -40,7 +46,7 @@ $userinfo = $user->findIdentity(Yii::$app->session['__id']);
     </div>
     <div class="orders-new clearfix">
         <p>顺序:</p>
-        <?= $form->field($model, 'sort')->textInput(['value'=>999])->label(false)->hint('<label>* </label>') ?>
+        <?= $form->field($model, 'sort')->textInput(['value'=>($model->sort>0)?$model->sort:999])->label(false)->hint('<label>* </label>') ?>
     </div>
     <div class="orders-new clearfix">
         <p>备注说明:</p>
@@ -49,7 +55,7 @@ $userinfo = $user->findIdentity(Yii::$app->session['__id']);
     <div class="orders-newbut">
         <?= Html::submitButton( '保存',  ['class' =>'orders-edbut']) ?>
         <a href="<?=Url::to(['shop/index'])?>">
-            <button class="orders-newbut2" type="button">返回</button>
+            <span class="orders-newbut2">返回</span>
         </a>
     </div>
 <?php ActiveForm::end(); ?>
